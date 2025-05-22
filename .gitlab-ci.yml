@@ -53,8 +53,7 @@ build_backend:
 build_frontend:
   stage: build
   script:
-    - cd $FRONTEND_DIR && npm rebuild
-    - cd $FRONTEND_DIR && npm run build
+    - cd $FRONTEND_DIR && npm rebuild && npm run build
   artifacts:
     paths:
       - $FRONTEND_DIR/.next
