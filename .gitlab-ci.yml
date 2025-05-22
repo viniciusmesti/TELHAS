@@ -15,9 +15,9 @@ install_dependencies:
   script:
     - node -v
     - npm -v
-    - echo $NODE_ENV
-    - cd backend && npm ci --include=dev
-    - cd ../frontend && npm ci --include=dev
+    - echo "NODE_ENV is: $NODE_ENV"
+    - cd backend && NODE_ENV=development npm ci --include=dev || npm install
+    - cd ../frontend && NODE_ENV=development npm ci --include=dev || npm install
 
 lint:
   stage: lint
