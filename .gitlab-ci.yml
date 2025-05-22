@@ -16,29 +16,25 @@ install_dependencies:
   stage: install
   script:
     - npm ci
-  tags:
-    - docker
+
 
 lint:
   stage: lint
   script:
     - npm run lint
-  tags:
-    - docker
+
 
 test:
   stage: test
   script:
     - npm run test
-  tags:
-    - docker
+
 
 build:
   stage: build
   script:
     - npm run build
-  tags:
-    - docker
+
 
 deploy:
   stage: deploy
