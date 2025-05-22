@@ -55,7 +55,8 @@ build_frontend:
   before_script:
     - apt-get update && apt-get install -y build-essential python3 g++ make && rm -rf /var/lib/apt/lists/*
   script:
-    - cd $FRONTEND_DIR && npm rebuild && npm run build
+    - cd $FRONTEND_DIR && npm install && npm rebuild lightningcss && npm run build
   artifacts:
     paths:
       - $FRONTEND_DIR/.next
+
