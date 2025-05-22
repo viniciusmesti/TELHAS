@@ -1,0 +1,49 @@
+stages:
+  - install
+  - lint
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_ENV: 'production'
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: install
+  script:
+    - npm ci
+  tags:
+    - docker
+
+lint:
+  stage: lint
+  script:
+    - npm run lint
+  tags:
+    - docker
+
+test:
+  stage: test
+  script:
+    - npm run test
+  tags:
+    - docker
+
+build:
+  stage: build
+  script:
+    - npm run build
+  tags:
+    - docker
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploy stage: customize com seu comando de deploy"
+  when: manual
+  tags:
+    - docker
