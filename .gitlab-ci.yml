@@ -1,5 +1,8 @@
 image: node:18
 
+variables:
+  NODE_ENV: 'development'
+
 stages:
   - install
   - lint
@@ -10,6 +13,9 @@ stages:
 install_dependencies:
   stage: install
   script:
+    - node -v
+    - npm -v
+    - echo $NODE_ENV
     - cd backend && npm ci --include=dev
     - cd ../frontend && npm ci --include=dev
 
