@@ -24,8 +24,8 @@ install_dependencies:
     - cd ../$FRONTEND_DIR && npm ci --include=dev
   artifacts:
     paths:
-      - $BACKEND_DIR/node_modules
-      - $FRONTEND_DIR/node_modules
+      - $BACKEND_DIR
+      - $FRONTEND_DIR
 
 lint_backend:
   stage: lint
@@ -53,11 +53,8 @@ build_backend:
 build_frontend:
   stage: build
   script:
-    - cd $FRONTEND_DIR && npm ci --include=dev
     - cd $FRONTEND_DIR && npm rebuild
     - cd $FRONTEND_DIR && npm run build
   artifacts:
     paths:
       - $FRONTEND_DIR/.next
-
-
