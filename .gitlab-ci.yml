@@ -43,7 +43,6 @@ build:
 deploy:
   stage: deploy
   script:
-    - echo "Deploy stage: customize com seu comando de deploy"
+    - echo "Deploy manual ou automático configurável depois"
   when: manual
-  tags:
-    - docker
+
