@@ -1,46 +1,60 @@
 image: node:18
 
-variables:
-  NODE_ENV: 'development'
-
 stages:
   - install
   - lint
   - test
   - build
-  - deploy
+
+variables:
+  NODE_ENV: 'production'
+  BACKEND_DIR: 'backend'
+  FRONTEND_DIR: 'frontend'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ${BACKEND_DIR}/node_modules
+    - ${FRONTEND_DIR}/node_modules
 
 install_dependencies:
   stage: install
   script:
-    - node -v
-    - npm -v
-    - echo "NODE_ENV is: $NODE_ENV"
-    - cd backend
-    - NODE_ENV=development npm ci --include=dev || NODE_ENV=development npm install
-    - cd ../frontend
-    - NODE_ENV=development npm ci --include=dev || NODE_ENV=development npm install
+    - cd $BACKEND_DIR && npm ci --include=dev
+    - cd ../$FRONTEND_DIR && npm ci --include=dev
+  artifacts:
+    paths:
+      - $BACKEND_DIR/node_modules
+      - $FRONTEND_DIR/node_modules
 
-lint:
+lint_backend:
   stage: lint
   script:
-    - cd backend && npm run lint
-    - cd ../frontend && npm run lint || echo "Frontend lint não configurado, skip"
+    - cd $BACKEND_DIR && npm run lint
 
-test:
+lint_frontend:
+  stage: lint
+  script:
+    - cd $FRONTEND_DIR && npm run lint || echo "Frontend lint não configurado ou falhou"
+
+test_backend:
   stage: test
   script:
-    - cd backend && npm run test
-    - cd ../frontend && npm run test || echo "Frontend test não configurado, skip"
+    - cd $BACKEND_DIR && npm run test
 
-build:
+build_backend:
   stage: build
   script:
-    - cd backend && npm run build
-    - cd ../frontend && npm run build
+    - cd $BACKEND_DIR && npm run build
+  artifacts:
+    paths:
+      - $BACKEND_DIR/dist
 
-deploy:
-  stage: deploy
+build_frontend:
+  stage: build
   script:
-    - echo "Deploy manual ou automático configurável depois"
-  when: manual
+    - cd $FRONTEND_DIR && npm run build
+  artifacts:
+    paths:
+      - $FRONTEND_DIR/.next
+
