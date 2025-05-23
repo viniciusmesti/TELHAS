@@ -12,18 +12,6 @@ variables:
   NODE_ENV: 'production'
   NPM_TOKEN: ${NPM_TOKEN}
 
-<<<<<<< HEAD
-build:
-  stage: build
-  script:
-    - cd backend && npm run build
-    - cd ../frontend && npm run build
-
-# cache:
-#   paths:
-#     - frontend/node_modules/
-#     - backend/node_modules/
-=======
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
@@ -51,7 +39,6 @@ install_dependencies:
   rules:
     - if: $CI_COMMIT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
->>>>>>> 8da633d709e58bc4ab0038213ebeabfc8430d2ce
 
 lint_backend:
   stage: lint
