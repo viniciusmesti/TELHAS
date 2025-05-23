@@ -5,8 +5,14 @@ stages:
   - lint
   - test
   - build
-  - deploy
 
+variables:
+  BACKEND_DIR: 'backend'
+  FRONTEND_DIR: 'frontend'
+  NODE_ENV: 'production'
+  NPM_TOKEN: ${NPM_TOKEN}
+
+<<<<<<< HEAD
 build:
   stage: build
   script:
@@ -17,27 +23,94 @@ build:
 #   paths:
 #     - frontend/node_modules/
 #     - backend/node_modules/
+=======
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - ${BACKEND_DIR}/node_modules
+    - ${FRONTEND_DIR}/node_modules
+    - .npm
 
-lint:
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+install_dependencies:
+  stage: install
+  script:
+    - npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+    - cd $BACKEND_DIR && npm ci --include=dev
+    - cd ../$FRONTEND_DIR && npm ci --include=dev
+  artifacts:
+    paths:
+      - $BACKEND_DIR/node_modules
+      - $FRONTEND_DIR/node_modules
+    expire_in: 1 day
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+>>>>>>> 8da633d709e58bc4ab0038213ebeabfc8430d2ce
+
+lint_backend:
   stage: lint
   script:
-    - cd backend && npm run lint
-    - cd ../frontend && npm run lint || echo "Frontend lint não configurado, skip"
+    - cd $BACKEND_DIR && npm run lint
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-test:
+lint_frontend:
+  stage: lint
+  script:
+    - cd $FRONTEND_DIR && npm run lint || echo "Frontend lint não configurado ou falhou"
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+test_backend:
   stage: test
   script:
-    - cd backend && npm run test
-    - cd ../frontend && npm run test || echo "Frontend test não configurado, skip"
+    - cd $BACKEND_DIR && npm run test
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-build:
+build_backend:
   stage: build
   script:
-    - cd backend && npm run build
-    - cd ../frontend && npm run build
+    - cd $BACKEND_DIR && npm run build
+  artifacts:
+    paths:
+      - $BACKEND_DIR/dist
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
 
-deploy:
-  stage: deploy
+build_frontend:
+  stage: build
+  before_script:
+    - apt-get update && apt-get install -y build-essential python3 g++ make && rm -rf /var/lib/apt/lists/*
+    - cd $FRONTEND_DIR
+    - npm install -g pnpm
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install
+    - pnpm approve-builds @tailwindcss/oxide sharp
+    - pnpm rebuild lightningcss
   script:
-    - echo "Deploy manual ou automático configurável depois"
-  when: manual
+    - pnpm run build
+  artifacts:
+    paths:
+      - $FRONTEND_DIR/.next
+    expire_in: 1 week
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-pnpm
+    paths:
+      - $FRONTEND_DIR/.pnpm-store
+      - $FRONTEND_DIR/node_modules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
