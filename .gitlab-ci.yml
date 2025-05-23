@@ -83,14 +83,21 @@ build_frontend:
     - apt-get update && apt-get install -y build-essential python3 g++ make && rm -rf /var/lib/apt/lists/*
     - cd $FRONTEND_DIR
     - npm install -g pnpm
+    - pnpm config set store-dir .pnpm-store
     - pnpm install
+    - pnpm approve-builds @tailwindcss/oxide sharp
     - pnpm rebuild lightningcss
   script:
-    - cd $FRONTEND_DIR && pnpm run build
+    - pnpm run build
   artifacts:
     paths:
       - $FRONTEND_DIR/.next
     expire_in: 1 week
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-pnpm
+    paths:
+      - $FRONTEND_DIR/.pnpm-store
+      - $FRONTEND_DIR/node_modules
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_COMMIT_BRANCH == "develop"
