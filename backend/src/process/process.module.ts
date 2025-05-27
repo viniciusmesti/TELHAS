@@ -7,8 +7,13 @@ import { SupabaseModule } from 'src/supabase/supabase.module';
 import { SupabaseService } from 'src/supabase/supabase.service';
 
 @Module({
-  imports: [SupabaseModule], 
-  providers: [ProcessService, PrismaService, ProcessingLogService, SupabaseService],
+  imports: [SupabaseModule],
+  providers: [
+    ProcessService,
+    PrismaService,
+    ProcessingLogService,
+    SupabaseService,
+  ],
   controllers: [ProcessController],
 })
 export class ProcessModule {}

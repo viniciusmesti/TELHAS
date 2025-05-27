@@ -19,11 +19,15 @@ const GRUPO_1 = ['1', '2', '3', '4'];
 const GRUPO_2 = ['501', '502', '503', '504'];
 
 function normalizeText(str: string): string {
-  return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim();
+  return str
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .trim();
 }
 
 export async function readExcelFile(filePath: string): Promise<any[]> {
-  if (!fs.existsSync(filePath)) throw new Error(`Arquivo não encontrado: ${filePath}`);
+  if (!fs.existsSync(filePath))
+    throw new Error(`Arquivo não encontrado: ${filePath}`);
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.worksheets[0];
@@ -42,7 +46,11 @@ export function processarRegra329(rows: any[]): string[] {
     if (relatorio !== 329) return;
 
     const empresa = row[2]?.toString().trim() || '';
-    const grupo = GRUPO_1.includes(empresa) ? 1 : GRUPO_2.includes(empresa) ? 2 : 0;
+    const grupo = GRUPO_1.includes(empresa)
+      ? 1
+      : GRUPO_2.includes(empresa)
+        ? 2
+        : 0;
     if (grupo === 0) return;
 
     const banco = row[22]?.toString().trim() || '';
@@ -59,20 +67,32 @@ export function processarRegra329(rows: any[]): string[] {
     if (grupo === 1) {
       if (empresa === '1') {
         // MATRIZ
-        output.push(`${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO1};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO1};${banco};${valor};${historico}`,
+        );
       } else {
         // FILIAIS GRUPO 1
-        output.push(`${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO1};${CONTA_CREDITO_FILIAL};${valor};${historico}`);
-        output.push(`${MATRIZ_CODE};${data};${contaFilial};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO1};${CONTA_CREDITO_FILIAL};${valor};${historico}`,
+        );
+        output.push(
+          `${MATRIZ_CODE};${data};${contaFilial};${banco};${valor};${historico}`,
+        );
       }
     } else if (grupo === 2) {
       if (empresa === '501') {
         // MATRIZ
-        output.push(`${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO2};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO2};${banco};${valor};${historico}`,
+        );
       } else {
         // FILIAIS GRUPO 2
-        output.push(`${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO2};${CONTA_CREDITO_FILIAL};${valor};${historico}`);
-        output.push(`${MATRIZ_CODE};${data};${contaFilial};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${data};${CONTA_DEBITO_GRUPO2};${CONTA_CREDITO_FILIAL};${valor};${historico}`,
+        );
+        output.push(
+          `${MATRIZ_CODE};${data};${contaFilial};${banco};${valor};${historico}`,
+        );
       }
     }
   });
@@ -82,7 +102,7 @@ export function processarRegra329(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha processada. O arquivo não será gerado.");
+    console.log('Nenhuma linha processada. O arquivo não será gerado.');
     return;
   }
   data.push('');
@@ -90,7 +110,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   console.log(`✅ Arquivo salvo com ${data.length} linhas em: ${outputPath}`);
 }
 
-export async function processarArquivo329(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo329(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento da Regra 329...');
     const rows = await readExcelFile(inputExcelPath);

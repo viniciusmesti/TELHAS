@@ -1,7 +1,9 @@
-import { processarArquivo329 } from "./ProcessarArquivo329";
+import { processarArquivo329 } from './ProcessarArquivo329';
 
-const inputExcelPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\329.xlsx';
-const outputTxtPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida329.txt';
+const inputExcelPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\329.xlsx';
+const outputTxtPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida329.txt';
 
 (async () => {
   try {
@@ -13,4 +15,3 @@ const outputTxtPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\
     console.error('❌ Erro ao executar o teste:', error);
   }
 })();
-  

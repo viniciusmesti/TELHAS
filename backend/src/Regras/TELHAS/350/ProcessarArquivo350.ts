@@ -17,16 +17,16 @@ const CONTA_CORRENTE_FILIAL_MAP: Record<string, string> = {
 };
 
 const historicoMap: { [key: string]: string } = {
-  "APLICACAO": "444",
-  "RESGATE": "656",
-  "DEPOSITO": "466",
-  "TRANSFERENCIA": "609"
+  APLICACAO: '444',
+  RESGATE: '656',
+  DEPOSITO: '466',
+  TRANSFERENCIA: '609',
 };
 
 function normalizeText(str: string): string {
   if (!str || typeof str !== 'string') return '';
   return str
-    .normalize("NFD")
+    .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .replace(/\s+/g, ' ')
     .trim()
@@ -55,30 +55,40 @@ export function processarRegra350(rows: any[]): string[] {
     const codigoRelatorio = Number(row[1]);
     if (codigoRelatorio !== 350) return;
 
-    const filial = row[2] ? row[2].toString().trim() : "";
+    const filial = row[2] ? row[2].toString().trim() : '';
     if (!['5', '7', '10', '11', '12'].includes(filial)) {
       console.log(`Linha ${index + 1} ignorada - Filial inválida: ${filial}`);
       return;
     }
 
-    const dataBaixa = row[4] ? row[4].toString().split(" ")[0] : "DATA_INVALIDA";
-    const valorBaixa = row[6] ? parseFloat(row[6]).toFixed(2) : "0.00";
+    const dataBaixa = row[4]
+      ? row[4].toString().split(' ')[0]
+      : 'DATA_INVALIDA';
+    const valorBaixa = row[6] ? parseFloat(row[6]).toFixed(2) : '0.00';
     if (parseFloat(valorBaixa) <= 0) return;
 
-    const historicoReferencia = row[5] ? normalizeText(row[5].toString().trim()) : "";
+    const historicoReferencia = row[5]
+      ? normalizeText(row[5].toString().trim())
+      : '';
     const hist = historicoMap[historicoReferencia];
     if (!hist) {
-      console.log(`Linha ${index + 1} ignorada - Histórico inválido: ${historicoReferencia}`);
+      console.log(
+        `Linha ${index + 1} ignorada - Histórico inválido: ${historicoReferencia}`,
+      );
       return;
     }
 
     if (filial === '5') {
-      const contaDebito = row[10] ? row[10].toString().trim() : "";
-      const contaCredito = row[8] ? row[8].toString().trim() : "";
-      output.push(`${MATRIZ_CODE};${dataBaixa};${contaDebito};${contaCredito};${valorBaixa};${hist}`);
+      const contaDebito = row[10] ? row[10].toString().trim() : '';
+      const contaCredito = row[8] ? row[8].toString().trim() : '';
+      output.push(
+        `${MATRIZ_CODE};${dataBaixa};${contaDebito};${contaCredito};${valorBaixa};${hist}`,
+      );
     } else {
       if (historicoReferencia !== 'DEPOSITO') {
-        console.log(`Linha ${index + 1} ignorada - Apenas DEPOSITO permitido em filiais. Histórico: ${historicoReferencia}`);
+        console.log(
+          `Linha ${index + 1} ignorada - Apenas DEPOSITO permitido em filiais. Histórico: ${historicoReferencia}`,
+        );
         return;
       }
 
@@ -88,11 +98,15 @@ export function processarRegra350(rows: any[]): string[] {
       else if (filial === '11') localFilial = FILIAL_CODE_5;
       else if (filial === '12') localFilial = FILIAL_CODE_6;
 
-      output.push(`${localFilial};${dataBaixa};${CONTA_CC_MATRIZ};13;${valorBaixa};${hist}`);
+      output.push(
+        `${localFilial};${dataBaixa};${CONTA_CC_MATRIZ};13;${valorBaixa};${hist}`,
+      );
 
-      const contaDebitoExtra = row[10] ? row[10].toString().trim() : "";
+      const contaDebitoExtra = row[10] ? row[10].toString().trim() : '';
       const contaCreditoExtra = CONTA_CORRENTE_FILIAL_MAP[filial];
-      output.push(`${MATRIZ_CODE};${dataBaixa};${contaDebitoExtra};${contaCreditoExtra};${valorBaixa};${hist}`);
+      output.push(
+        `${MATRIZ_CODE};${dataBaixa};${contaDebitoExtra};${contaCreditoExtra};${valorBaixa};${hist}`,
+      );
     }
   });
 
@@ -101,7 +115,7 @@ export function processarRegra350(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
@@ -110,7 +124,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   console.log(`📂 Arquivo salvo com ${data.length} linhas em: ${outputPath}`);
 }
 
-export async function processarArquivo350(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo350(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('🚀 Iniciando processamento...');
     const rows = await readExcelFile(inputExcelPath);

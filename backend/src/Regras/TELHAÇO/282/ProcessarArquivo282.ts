@@ -34,7 +34,7 @@ function buildHistorico(
   historicoI: string,
   historicoG: string,
   isJurosOuMulta: boolean,
-  numeroNota: string
+  numeroNota: string,
 ): string {
   return isJurosOuMulta
     ? `${codigo};${historicoG} - ${numeroNota}`
@@ -47,7 +47,7 @@ function buildLine(
   campo: string,
   conta: string,
   valor: string,
-  historico: string
+  historico: string,
 ): string {
   return `${local};${dataCredito};${campo};${conta};${valor};${historico}`;
 }
@@ -80,7 +80,9 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
   const valorDesdobramento = parseFloat(row[15] || '0').toFixed(2);
   const valorBaixa = parseFloat(row[19] || '0').toFixed(2);
   const valorDesconto = parseFloat(row[29] || '0').toFixed(2);
-  const valorJuros = (parseFloat(row[30] || '0') + parseFloat(row[32] || '0')).toFixed(2);
+  const valorJuros = (
+    parseFloat(row[30] || '0') + parseFloat(row[32] || '0')
+  ).toFixed(2);
   const valorMulta = parseFloat(row[31] || '0').toFixed(2);
 
   const cnpjOuCpf = row[8]?.toString() || '';
@@ -95,7 +97,7 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
     valor: string,
     historicoCodigo: string,
     local: string,
-    isJurosOuMulta: boolean = false
+    isJurosOuMulta: boolean = false,
   ) => {
     if (parseFloat(valor) > 0) {
       output.push(
@@ -105,15 +107,28 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
           debito,
           credito,
           valor,
-          buildHistorico(historicoCodigo, historicoI, historicoG, isJurosOuMulta, numeroNota)
-        )
+          buildHistorico(
+            historicoCodigo,
+            historicoI,
+            historicoG,
+            isJurosOuMulta,
+            numeroNota,
+          ),
+        ),
       );
     }
   };
 
   if (filial === '1') {
     addLine(banco, cnpjOuCpf, valorDesdobramento, '1188', MATRIZ_CODE);
-    addLine(banco, CONTA_JUROS_RECEBIDOS, valorJuros, '1202', MATRIZ_CODE, true);
+    addLine(
+      banco,
+      CONTA_JUROS_RECEBIDOS,
+      valorJuros,
+      '1202',
+      MATRIZ_CODE,
+      true,
+    );
     addLine(CONTA_DESCONTO, banco, valorDesconto, '2082', MATRIZ_CODE);
     addLine(banco, CONTA_MULTA, valorMulta, '1997', MATRIZ_CODE);
   } else if (['2', '3', '4'].includes(filial)) {
@@ -121,7 +136,14 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
     const contaFilial = CONTA_FILIAL_MAP[filial];
 
     addLine(CC_MATRIZ, cnpjOuCpf, valorDesdobramento, '1188', localFilial);
-    addLine(CC_MATRIZ, CONTA_JUROS_RECEBIDOS, valorJuros, '1202', localFilial, true);
+    addLine(
+      CC_MATRIZ,
+      CONTA_JUROS_RECEBIDOS,
+      valorJuros,
+      '1202',
+      localFilial,
+      true,
+    );
     addLine(CONTA_DESCONTO, CC_MATRIZ, valorDesconto, '2082', localFilial);
     addLine(CC_MATRIZ, CONTA_MULTA, valorMulta, '1997', localFilial);
 
@@ -144,7 +166,10 @@ function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, data.join('\r\n'), { encoding: 'utf8' });
 }
 
-export async function processarArquivo282(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo282(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     const rows = await readExcelFile(inputExcelPath);
     const transformedData = transformData(rows);

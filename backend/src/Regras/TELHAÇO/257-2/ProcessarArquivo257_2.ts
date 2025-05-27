@@ -26,7 +26,7 @@ const CONTAS_FILIAIS: Record<number, string> = {
 const TIPO_RELATORIO_PROCESSAR = '257/2';
 
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/\u0300-\u036f/g, '');
+  return str.normalize('NFD').replace(/\u0300-\u036f/g, '');
 }
 
 function buildHistoricoAdiant(nomeCliente: string): string {
@@ -37,7 +37,14 @@ function buildHistoricoCheq(nomeCliente: string, docNumero: string): string {
   return `1193;${nomeCliente}${docNumero ? ' - ' + docNumero : ''}`;
 }
 
-function buildLine(local: string, data: string, contaDeb: string, contaCred: string, valor: string, historico: string): string {
+function buildLine(
+  local: string,
+  data: string,
+  contaDeb: string,
+  contaCred: string,
+  valor: string,
+  historico: string,
+): string {
   return `${local};${data};${contaDeb};${contaCred};${valor};${historico}`;
 }
 
@@ -71,19 +78,73 @@ function processRow(row: any[], rowIndex: number): string[] {
   const historicoCheq = buildHistoricoCheq(nomeCliente, docNumero);
 
   if (empresa === 501) {
-    outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_ADIANTAMENTO_CLIENTE, valorBaixa, historicoAdiant));
+    outputLines.push(
+      buildLine(
+        LOCAL_MATRIZ,
+        dataBaixa,
+        banco,
+        CONTA_ADIANTAMENTO_CLIENTE,
+        valorBaixa,
+        historicoAdiant,
+      ),
+    );
   } else if ([503, 502, 504].includes(empresa)) {
     const filialCode = FILIAL_MAPPING[empresa];
     const contaFilial = CONTAS_FILIAIS[empresa];
-    outputLines.push(buildLine(filialCode, dataBaixa, CONTA_CC_MATRIZ, CONTA_ADIANTAMENTO_CLIENTE, valorBaixa, historicoAdiant));
-    outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, contaFilial, valorBaixa, historicoAdiant));
+    outputLines.push(
+      buildLine(
+        filialCode,
+        dataBaixa,
+        CONTA_CC_MATRIZ,
+        CONTA_ADIANTAMENTO_CLIENTE,
+        valorBaixa,
+        historicoAdiant,
+      ),
+    );
+    outputLines.push(
+      buildLine(
+        LOCAL_MATRIZ,
+        dataBaixa,
+        banco,
+        contaFilial,
+        valorBaixa,
+        historicoAdiant,
+      ),
+    );
   } else if (empresa === 1) {
-    outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_CHEQUES_RECEBER, valorBaixa, historicoCheq));
+    outputLines.push(
+      buildLine(
+        LOCAL_MATRIZ,
+        dataBaixa,
+        banco,
+        CONTA_CHEQUES_RECEBER,
+        valorBaixa,
+        historicoCheq,
+      ),
+    );
   } else if ([3, 2, 4].includes(empresa)) {
     const filialCode = FILIAL_MAPPING[empresa];
     const contaFilial = CONTAS_FILIAIS[empresa];
-    outputLines.push(buildLine(filialCode, dataBaixa, CONTA_CC_MATRIZ, CONTA_CHEQUES_RECEBER, valorBaixa, historicoCheq));
-    outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, contaFilial, valorBaixa, historicoCheq));
+    outputLines.push(
+      buildLine(
+        filialCode,
+        dataBaixa,
+        CONTA_CC_MATRIZ,
+        CONTA_CHEQUES_RECEBER,
+        valorBaixa,
+        historicoCheq,
+      ),
+    );
+    outputLines.push(
+      buildLine(
+        LOCAL_MATRIZ,
+        dataBaixa,
+        banco,
+        contaFilial,
+        valorBaixa,
+        historicoCheq,
+      ),
+    );
   } else {
     console.log(`Empresa ${empresa} não reconhecida (linha ${rowIndex + 1})`);
   }
@@ -106,7 +167,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, content, { encoding: 'utf8' });
 }
 
-export async function processarArquivo257_2(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo257_2(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     const rows = await readExcelFile(inputExcelPath);
     const transformedData = transformData(rows);

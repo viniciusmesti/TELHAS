@@ -5,8 +5,26 @@ import * as fs from 'fs';
 async function test() {
   try {
     console.log('Iniciando o teste da Regra 336...');
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'uploads', '336.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'saida', 'saida336.txt');
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'uploads',
+      '336.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'saida',
+      'saida336.txt',
+    );
 
     // Certifica-se de que o diretório de saída existe:
     const outputDir = path.dirname(outputTxtPath);

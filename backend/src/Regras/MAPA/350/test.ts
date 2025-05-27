@@ -5,9 +5,26 @@ import * as fs from 'fs';
 async function test() {
   try {
     console.log('Iniciando o teste da Regra 350...');
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'uploads', '350.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'saida', 'saida350.txt');
-
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'uploads',
+      '350.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'saida',
+      'saida350.txt',
+    );
 
     const outputDir = path.dirname(outputTxtPath);
     if (!fs.existsSync(outputDir)) {

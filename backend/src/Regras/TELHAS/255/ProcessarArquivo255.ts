@@ -10,7 +10,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
 }
 
 // Função principal que orquestra a leitura, transformação e exportação dos dados da Regra 255 para a empresa TELHAS.
-export async function processarArquivo255(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo255(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Lendo o arquivo Excel...');
     const rows = await readExcelFile(inputExcelPath);

@@ -1,15 +1,15 @@
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 
-const MATRIZ_CODE   = '0001';
+const MATRIZ_CODE = '0001';
 const FILIAL_CODE_2 = '0002';
 const FILIAL_CODE_3 = '0003';
 
 const FILIAL_ACCOUNT = '1514';
 
 const CONTA_JUROS_RECEBIDOS = '1120';
-const CONTA_DESCONTO        = '1377';
-const CONTA_MULTA           = '1112';
+const CONTA_DESCONTO = '1377';
+const CONTA_MULTA = '1112';
 
 const CONTA_FILIAL_2 = '1515';
 const CONTA_FILIAL_3 = '5105';
@@ -17,15 +17,15 @@ const CONTA_FILIAL_3 = '5105';
 const TIPO_RELATORIO_PROCESSAR = '282';
 
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, '');
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function buildHistorico(
   codigo: string,
   historicoI: string,
   historicoG: string,
-  isJurosOuMulta: boolean, 
-  numeroNota: string
+  isJurosOuMulta: boolean,
+  numeroNota: string,
 ): string {
   return isJurosOuMulta
     ? `${codigo};${historicoG} - ${numeroNota}`
@@ -54,7 +54,7 @@ async function readExcelFile(filePath: string): Promise<ExcelRow[]> {
   const rows: ExcelRow[] = [];
 
   worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber > 1) { 
+    if (rowNumber > 1) {
       rows.push(row.values as ExcelRow);
     }
   });
@@ -72,7 +72,9 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
   }
 
   if (tipoRelatorio !== TIPO_RELATORIO_PROCESSAR) {
-    console.log(`Linha ${index + 1} ignorada: Tipo de relátorio "${tipoRelatorio}" nao corresponde a "${TIPO_RELATORIO_PROCESSAR}".`);
+    console.log(
+      `Linha ${index + 1} ignorada: Tipo de relátorio "${tipoRelatorio}" nao corresponde a "${TIPO_RELATORIO_PROCESSAR}".`,
+    );
     return;
   }
 
@@ -91,7 +93,7 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
     valor: string,
     historicoCodigo: string,
     local: string,
-    isJurosOuMulta: boolean = false
+    isJurosOuMulta: boolean = false,
   ) => {
     if (parseFloat(valor) > 0) {
       output.push(
@@ -101,33 +103,78 @@ function processRow(row: ExcelRow, index: number, output: string[]): void {
           debito,
           credito,
           valor,
-          buildHistorico(historicoCodigo, historicoI, historicoG, isJurosOuMulta, numeroNota)
-        )
+          buildHistorico(
+            historicoCodigo,
+            historicoI,
+            historicoG,
+            isJurosOuMulta,
+            numeroNota,
+          ),
+        ),
       );
     }
   };
 
-  if (filial === '13') {  
-
+  if (filial === '13') {
     addLine(banco, cnpjOuCpf, valorDesdobramento, '1188', MATRIZ_CODE);
-    addLine(banco, CONTA_JUROS_RECEBIDOS, (parseFloat(row[30] || '0') + parseFloat(row[32] || '0')).toFixed(2), '1202', MATRIZ_CODE, true);
-    addLine("1377", banco, parseFloat(row[29] || '0').toFixed(2), '2082', MATRIZ_CODE);
-    addLine(banco, CONTA_MULTA, parseFloat(row[31] || '0').toFixed(2), '1997', MATRIZ_CODE);
+    addLine(
+      banco,
+      CONTA_JUROS_RECEBIDOS,
+      (parseFloat(row[30] || '0') + parseFloat(row[32] || '0')).toFixed(2),
+      '1202',
+      MATRIZ_CODE,
+      true,
+    );
+    addLine(
+      '1377',
+      banco,
+      parseFloat(row[29] || '0').toFixed(2),
+      '2082',
+      MATRIZ_CODE,
+    );
+    addLine(
+      banco,
+      CONTA_MULTA,
+      parseFloat(row[31] || '0').toFixed(2),
+      '1997',
+      MATRIZ_CODE,
+    );
   } else if (filial === '14' || filial === '15') {
-    const localFilial = (filial === '14' ? FILIAL_CODE_2 : FILIAL_CODE_3);
+    const localFilial = filial === '14' ? FILIAL_CODE_2 : FILIAL_CODE_3;
 
     addLine(FILIAL_ACCOUNT, cnpjOuCpf, valorDesdobramento, '1188', localFilial);
-    addLine(FILIAL_ACCOUNT, CONTA_JUROS_RECEBIDOS,  (parseFloat(row[30] || '0') + parseFloat(row[32] || '0')).toFixed(2), '1202', localFilial, true);
-    addLine("1377", FILIAL_ACCOUNT, parseFloat(row[29] || '0').toFixed(2), '2082', localFilial);
-    addLine(FILIAL_ACCOUNT, CONTA_MULTA, parseFloat(row[31] || '0').toFixed(2), '1997', localFilial);
+    addLine(
+      FILIAL_ACCOUNT,
+      CONTA_JUROS_RECEBIDOS,
+      (parseFloat(row[30] || '0') + parseFloat(row[32] || '0')).toFixed(2),
+      '1202',
+      localFilial,
+      true,
+    );
+    addLine(
+      '1377',
+      FILIAL_ACCOUNT,
+      parseFloat(row[29] || '0').toFixed(2),
+      '2082',
+      localFilial,
+    );
+    addLine(
+      FILIAL_ACCOUNT,
+      CONTA_MULTA,
+      parseFloat(row[31] || '0').toFixed(2),
+      '1997',
+      localFilial,
+    );
 
-    const filialConta = (filial === '14' ? CONTA_FILIAL_2 : CONTA_FILIAL_3);
+    const filialConta = filial === '14' ? CONTA_FILIAL_2 : CONTA_FILIAL_3;
     addLine(banco, filialConta, valorBaixa, '1188', MATRIZ_CODE);
   } else {
     console.log(`Linha ${index + 1} ignorada: Filial nao mapeada (${filial}).`);
   }
 
-  console.log(`Linha(s) adicionada(s) (Linha ${index + 1}): ${output.slice(-4).join(' | ')}`);
+  console.log(
+    `Linha(s) adicionada(s) (Linha ${index + 1}): ${output.slice(-4).join(' | ')}`,
+  );
 }
 
 function transformData(rows: ExcelRow[]): string[] {
@@ -136,7 +183,9 @@ function transformData(rows: ExcelRow[]): string[] {
     console.log(`Processando linha ${index + 1}:`, row);
     processRow(row, index, output);
   });
-  console.log(`Transformação concluída. Total de linhas processadas: ${output.length}`);
+  console.log(
+    `Transformação concluída. Total de linhas processadas: ${output.length}`,
+  );
   return output;
 }
 
@@ -145,7 +194,10 @@ function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, data.join('\r\n'), { encoding: 'utf8' });
 }
 
-export async function processarArquivo282(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo282(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Lendo o arquivo Excel...');
     const rows = await readExcelFile(inputExcelPath);

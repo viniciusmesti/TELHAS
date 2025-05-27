@@ -2,21 +2,21 @@ import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 
 // Índices das colunas (baseado na posição no array row.values)
-const COL_RELATORIO           = 1;
-const COL_EMPRESA             = 2;
-const COL_HIST_G              = 7;
-const COL_CNPJ_CPF            = 8;
-const COL_HIST_I              = 9;
-const COL_DATA_BAIXA          = 18;
+const COL_RELATORIO = 1;
+const COL_EMPRESA = 2;
+const COL_HIST_G = 7;
+const COL_CNPJ_CPF = 8;
+const COL_HIST_I = 9;
+const COL_DATA_BAIXA = 18;
 const COL_VALOR_DESDOBRAMENTO = 15;
-const COL_JUROS1              = 30;
-const COL_JUROS2              = 32;
-const COL_DESCONTO            = 29;
-const COL_MULTA               = 31;
-const COL_TAXA_ADMIN          = 33;
-const COL_VALOR_COLUNA_S      = 19;
-const COL_BANCO_ORIGINAL      = 22;
-const COL_FORMA_CONTABILIZACAO= 36;
+const COL_JUROS1 = 30;
+const COL_JUROS2 = 32;
+const COL_DESCONTO = 29;
+const COL_MULTA = 31;
+const COL_TAXA_ADMIN = 33;
+const COL_VALOR_COLUNA_S = 19;
+const COL_BANCO_ORIGINAL = 22;
+const COL_FORMA_CONTABILIZACAO = 36;
 
 // Mapeamento de locais conforme o código da empresa
 const FILIAL_LOCALS: { [key: number]: string } = {
@@ -27,7 +27,7 @@ const FILIAL_LOCALS: { [key: number]: string } = {
   12: '0006',
 };
 
-// Contas específicas para determinadas filiais 
+// Contas específicas para determinadas filiais
 const CONTAS_FILIAIS: { [key: number]: string } = {
   7: '1000',
   10: '2053',
@@ -36,12 +36,16 @@ const CONTAS_FILIAIS: { [key: number]: string } = {
 };
 
 // Outras constantes
-const BANCO_CAIXA            = '13';
-const CONTA_PADRAO_FILIAL    = '1514';
-const CONTA_CC_MATRIZ        = '712';
+const BANCO_CAIXA = '13';
+const CONTA_PADRAO_FILIAL = '1514';
+const CONTA_CC_MATRIZ = '712';
 
 function normalizeText(text: string): string {
-  return text.normalize("NFD").replace(/\p{Diacritic}/gu, '').replace(/\s+/g, ' ').trim();
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function parseFloatSafe(value: any): number {
@@ -81,7 +85,11 @@ export async function readExcelFile(filePath: string): Promise<any[]> {
   return rows;
 }
 
-function processRowRegra335(row: any[], rowIndex: number, output: string[]): void {
+function processRowRegra335(
+  row: any[],
+  rowIndex: number,
+  output: string[],
+): void {
   console.log(`Linha ${rowIndex + 1} - Raw Data:`, row);
 
   const codigoRelatorio = Number(row[COL_RELATORIO]);
@@ -94,9 +102,15 @@ function processRowRegra335(row: any[], rowIndex: number, output: string[]): voi
   const bancoOriginal = row[COL_BANCO_ORIGINAL]?.toString() || '';
   const formaContabilizacao = Number(row[COL_FORMA_CONTABILIZACAO]);
   const cnpjOuCpf = row[COL_CNPJ_CPF]?.toString().trim() || '';
-  const dataBaixa = row[COL_DATA_BAIXA] ? row[COL_DATA_BAIXA].split(" ")[0] : "DATA_INVALIDA";
-  const valorDesdobramento = parseFloatSafe(row[COL_VALOR_DESDOBRAMENTO]).toFixed(2);
-  const jurosRecebidos = (parseFloatSafe(row[COL_JUROS1]) + parseFloatSafe(row[COL_JUROS2])).toFixed(2);
+  const dataBaixa = row[COL_DATA_BAIXA]
+    ? row[COL_DATA_BAIXA].split(' ')[0]
+    : 'DATA_INVALIDA';
+  const valorDesdobramento = parseFloatSafe(
+    row[COL_VALOR_DESDOBRAMENTO],
+  ).toFixed(2);
+  const jurosRecebidos = (
+    parseFloatSafe(row[COL_JUROS1]) + parseFloatSafe(row[COL_JUROS2])
+  ).toFixed(2);
   const desconto = parseFloatSafe(row[COL_DESCONTO]).toFixed(2);
   const multa = parseFloatSafe(row[COL_MULTA]).toFixed(2);
   const taxaAdministradora = parseFloatSafe(row[COL_TAXA_ADMIN]).toFixed(2);
@@ -109,27 +123,51 @@ function processRowRegra335(row: any[], rowIndex: number, output: string[]): voi
   const isFilial = [7, 10, 11, 12].includes(empresa);
   const extraRecordNeeded = isFilial && bancoOriginal !== '13';
 
-// débito: se for caixa (V = 13) → 13; 
-// senão, se for filial 7/10/11/12 → conta-corrente 712;
-// senão (matriz) → bancoOriginal
-const debitoPadrao = bancoOriginal === BANCO_CAIXA
-  ? BANCO_CAIXA
-  : isFilial
-    ? CONTA_CC_MATRIZ
-    : bancoOriginal;
-
+  // débito: se for caixa (V = 13) → 13;
+  // senão, se for filial 7/10/11/12 → conta-corrente 712;
+  // senão (matriz) → bancoOriginal
+  const debitoPadrao =
+    bancoOriginal === BANCO_CAIXA
+      ? BANCO_CAIXA
+      : isFilial
+        ? CONTA_CC_MATRIZ
+        : bancoOriginal;
 
   const creditoPadrao = formaContabilizacao === 1655 ? '893' : cnpjOuCpf;
 
-  addIfNotZero(output, `${local};${dataBaixa};${debitoPadrao};${creditoPadrao};${valorDesdobramento};1200;${historicoBase}`, valorDesdobramento);
-  addIfNotZero(output, `${local};${dataBaixa};${debitoPadrao};1120;${jurosRecebidos};1202;${historicoBase}`, jurosRecebidos);
-  addIfNotZero(output, `${local};${dataBaixa};1377;${debitoPadrao};${desconto};2082;${historicoBase}`, desconto);
-  addIfNotZero(output, `${local};${dataBaixa};${debitoPadrao};1112;${multa};1997;${historicoBase}`, multa);
-  addIfNotZero(output, `${local};${dataBaixa};1377;${debitoPadrao};${taxaAdministradora};2082;${historicoBase}`, taxaAdministradora);
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debitoPadrao};${creditoPadrao};${valorDesdobramento};1200;${historicoBase}`,
+    valorDesdobramento,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debitoPadrao};1120;${jurosRecebidos};1202;${historicoBase}`,
+    jurosRecebidos,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};1377;${debitoPadrao};${desconto};2082;${historicoBase}`,
+    desconto,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debitoPadrao};1112;${multa};1997;${historicoBase}`,
+    multa,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};1377;${debitoPadrao};${taxaAdministradora};2082;${historicoBase}`,
+    taxaAdministradora,
+  );
 
   if (extraRecordNeeded) {
     const contaFilial = CONTAS_FILIAIS[empresa];
-    addIfNotZero(output, `0001;${dataBaixa};${bancoOriginal};${contaFilial};${valorColunaS};1200;${historicoBase}`, valorColunaS);
+    addIfNotZero(
+      output,
+      `0001;${dataBaixa};${bancoOriginal};${contaFilial};${valorColunaS};1200;${historicoBase}`,
+      valorColunaS,
+    );
   }
 }
 
@@ -144,7 +182,7 @@ export function processarRegra335(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
@@ -152,7 +190,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, content, { encoding: 'utf8' });
 }
 
-export async function processarArquivo335(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo335(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento...');
     const rows = await readExcelFile(inputExcelPath);

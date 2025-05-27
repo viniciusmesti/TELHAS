@@ -1,10 +1,12 @@
 import { processarArquivo336 } from './ProcessarArquivo336';
 
 // Caminho do arquivo Excel de entrada
-const inputExcelPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\336.xlsx';
+const inputExcelPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\336.xlsx';
 
 // Caminho do arquivo TXT de saída
-const outputTxtPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida336.txt';
+const outputTxtPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida336.txt';
 
 (async () => {
   try {

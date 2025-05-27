@@ -6,8 +6,26 @@ async function testarProcessamento() {
     console.log('Iniciando o teste da Regra 257/1 para a empresa TELHAS...');
 
     // Ajuste os caminhos conforme sua estrutura de pastas:
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'uploads', '257_1.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'saida', 'saida257_1.txt');
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'uploads',
+      '257_1.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'saida',
+      'saida257_1.txt',
+    );
 
     // Certifique-se de que o diretório de saída existe:
     const fs = require('fs');
@@ -17,7 +35,10 @@ async function testarProcessamento() {
     }
 
     await processarArquivos257_1(inputExcelPath, outputTxtPath);
-    console.log('Teste da Regra 257/1 concluído com sucesso! Verifique o arquivo de saída:', outputTxtPath);
+    console.log(
+      'Teste da Regra 257/1 concluído com sucesso! Verifique o arquivo de saída:',
+      outputTxtPath,
+    );
   } catch (error) {
     console.error('Erro no teste da Regra 257/1:', error);
   }

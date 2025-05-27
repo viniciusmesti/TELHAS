@@ -35,7 +35,11 @@ const CONTA_DESCONTO = '1377';
 const CONTA_MULTA = '1112';
 
 function normalizeText(text: string): string {
-  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/\s+/g, ' ').trim();
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function parseFloatSafe(value: any): number {
@@ -51,7 +55,8 @@ function addIfNotZero(output: string[], line: string, valor: string): void {
 }
 
 export async function readExcelFile(filePath: string): Promise<any[]> {
-  if (!fs.existsSync(filePath)) throw new Error(`Arquivo não encontrado: ${filePath}`);
+  if (!fs.existsSync(filePath))
+    throw new Error(`Arquivo não encontrado: ${filePath}`);
 
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
@@ -63,7 +68,11 @@ export async function readExcelFile(filePath: string): Promise<any[]> {
   return rows;
 }
 
-function processRowRegra335(row: any[], rowIndex: number, output: string[]): void {
+function processRowRegra335(
+  row: any[],
+  rowIndex: number,
+  output: string[],
+): void {
   const codigoRelatorio = Number(row[COL_RELATORIO]);
   if (codigoRelatorio !== 335) return;
 
@@ -75,8 +84,12 @@ function processRowRegra335(row: any[], rowIndex: number, output: string[]): voi
   const formaContabilizacao = Number(row[COL_FORMA_CONTABILIZACAO]);
   const cnpjOuCpf = row[COL_CNPJ_CPF]?.toString().trim() || '';
   const dataBaixa = row[COL_DATA_BAIXA]?.split(' ')[0] || 'DATA_INVALIDA';
-  const valorDesdobramento = parseFloatSafe(row[COL_VALOR_DESDOBRAMENTO]).toFixed(2);
-  const jurosRecebidos = (parseFloatSafe(row[COL_JUROS1]) + parseFloatSafe(row[COL_JUROS2])).toFixed(2);
+  const valorDesdobramento = parseFloatSafe(
+    row[COL_VALOR_DESDOBRAMENTO],
+  ).toFixed(2);
+  const jurosRecebidos = (
+    parseFloatSafe(row[COL_JUROS1]) + parseFloatSafe(row[COL_JUROS2])
+  ).toFixed(2);
   const desconto = parseFloatSafe(row[COL_DESCONTO]).toFixed(2);
   const multa = parseFloatSafe(row[COL_MULTA]).toFixed(2);
   const taxaAdministradora = parseFloatSafe(row[COL_TAXA_ADMIN]).toFixed(2);
@@ -99,17 +112,40 @@ function processRowRegra335(row: any[], rowIndex: number, output: string[]): voi
 
   const credito = isAdiantamento ? '893' : cnpjOuCpf;
 
-  addIfNotZero(output, `${local};${dataBaixa};${debito};${credito};${valorDesdobramento};1200;${historicoBase}`, valorDesdobramento);
-  addIfNotZero(output, `${local};${dataBaixa};${debito};${CONTA_JUROS};${jurosRecebidos};1202;${historicoBase}`, jurosRecebidos);
-  addIfNotZero(output, `${local};${dataBaixa};${CONTA_DESCONTO};${debito};${desconto};2082;${historicoBase}`, desconto);
-  addIfNotZero(output, `${local};${dataBaixa};${debito};${CONTA_MULTA};${multa};1997;${historicoBase}`, multa);
-  addIfNotZero(output, `${local};${dataBaixa};${CONTA_DESCONTO};${debito};${taxaAdministradora};2082;${historicoBase}`, taxaAdministradora);
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debito};${credito};${valorDesdobramento};1200;${historicoBase}`,
+    valorDesdobramento,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debito};${CONTA_JUROS};${jurosRecebidos};1202;${historicoBase}`,
+    jurosRecebidos,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${CONTA_DESCONTO};${debito};${desconto};2082;${historicoBase}`,
+    desconto,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${debito};${CONTA_MULTA};${multa};1997;${historicoBase}`,
+    multa,
+  );
+  addIfNotZero(
+    output,
+    `${local};${dataBaixa};${CONTA_DESCONTO};${debito};${taxaAdministradora};2082;${historicoBase}`,
+    taxaAdministradora,
+  );
 
   if (!isCaixa && isFilial) {
     const contaFilial = CONTAS_FILIAIS[empresa];
-    addIfNotZero(output, `0001;${dataBaixa};${bancoOriginal};${contaFilial};${valorColunaS};1200;${historicoBase}`, valorColunaS);
+    addIfNotZero(
+      output,
+      `0001;${dataBaixa};${bancoOriginal};${contaFilial};${valorColunaS};1200;${historicoBase}`,
+      valorColunaS,
+    );
   }
-
 }
 
 export function processarRegra335(rows: any[]): string[] {
@@ -123,14 +159,17 @@ export function processarRegra335(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
   fs.writeFileSync(outputPath, data.join('\r\n'), { encoding: 'utf8' });
 }
 
-export async function processarArquivo335(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo335(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento...');
     const rows = await readExcelFile(inputExcelPath);

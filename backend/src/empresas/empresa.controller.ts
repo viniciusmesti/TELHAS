@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { EmpresaService } from './empresa.service';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto';
@@ -28,7 +36,10 @@ export class EmpresaController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateEmpresaDto: UpdateEmpresaDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateEmpresaDto: UpdateEmpresaDto,
+  ) {
     return this.empresaService.updateEmpresa(id.trim(), updateEmpresaDto);
   }
 
@@ -38,10 +49,12 @@ export class EmpresaController {
       where: { codigoSistema },
     });
   }
-  
 
   @Post(':id/rules')
-  async updateRules(@Param('id') id: string, @Body() rules: Record<string, any>) {
+  async updateRules(
+    @Param('id') id: string,
+    @Body() rules: Record<string, any>,
+  ) {
     return this.empresaService.updateEmpresaRules(id, rules);
   }
 }

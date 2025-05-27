@@ -1,13 +1,14 @@
-import { processarArquivo257_2 } from "./ProcessarArquivo257-2";
-
+import { processarArquivo257_2 } from './ProcessarArquivo257-2';
 
 const processarArquivo = processarArquivo257_2;
 
 // Caminho do arquivo Excel de entrada
-const inputExcelPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\257-2.xlsx';
+const inputExcelPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\uploads\\257-2.xlsx';
 
 // Caminho do arquivo TXT de saída
-const outputTxtPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida257-2.txt';
+const outputTxtPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\N&P\\saida\\saida257-2.txt';
 
 (async () => {
   try {

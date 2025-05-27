@@ -1,4 +1,8 @@
-import { processarArquivo289Mapa, exportToTxt289, exportTxtGenerico } from './ProcessarArquivo289';
+import {
+  processarArquivo289Mapa,
+  exportToTxt289,
+  exportTxtGenerico,
+} from './ProcessarArquivo289';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as xlsx from 'xlsx';
@@ -11,32 +15,52 @@ async function testarProcessamento() {
     const baseDir = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA');
 
     // Caminhos de entrada
-    const inputDuplicatasPath = path.join(baseDir, 'uploads', 'DUPLICATAS EM ABERTO.xlsx');
+    const inputDuplicatasPath = path.join(
+      baseDir,
+      'uploads',
+      'DUPLICATAS EM ABERTO.xlsx',
+    );
     const inputPagamentosPath = path.join(baseDir, 'uploads', '289.xlsx');
 
     // Caminhos de saída
-    const outputContabilPath = path.join(baseDir, 'saida', 'contabil', 'contabil289_mapa.txt');
-    const outputFiscalPath = path.join(baseDir, 'saida', 'fiscal', 'fiscal289_mapa.txt');
-    const outputDuplicatasPath = path.join(baseDir, 'saida', 'duplicatas', 'duplicatas_nao_encontradas289_mapa.xlsx');
+    const outputContabilPath = path.join(
+      baseDir,
+      'saida',
+      'contabil',
+      'contabil289_mapa.txt',
+    );
+    const outputFiscalPath = path.join(
+      baseDir,
+      'saida',
+      'fiscal',
+      'fiscal289_mapa.txt',
+    );
+    const outputDuplicatasPath = path.join(
+      baseDir,
+      'saida',
+      'duplicatas',
+      'duplicatas_nao_encontradas289_mapa.xlsx',
+    );
 
     // Cria os diretórios de saída, se não existirem
-    [path.dirname(outputContabilPath), path.dirname(outputFiscalPath), path.dirname(outputDuplicatasPath)]
-      .forEach(dir => {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-      });
+    [
+      path.dirname(outputContabilPath),
+      path.dirname(outputFiscalPath),
+      path.dirname(outputDuplicatasPath),
+    ].forEach((dir) => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    });
 
     // Executa o processamento (aguarda a função async)
     const { contabil, fiscal, duplicatas } = await processarArquivo289Mapa(
       inputPagamentosPath,
-      inputDuplicatasPath
+      inputDuplicatasPath,
     );
-
 
     exportTxtGenerico(contabil, outputContabilPath, '289_contabil');
     exportTxtGenerico(fiscal, outputFiscalPath, '289_fiscal');
-
 
     // Exporta os arquivos TXT
     exportToTxt289(contabil, outputContabilPath);
@@ -48,7 +72,9 @@ async function testarProcessamento() {
       const worksheetOut = xlsx.utils.json_to_sheet(duplicatas);
       xlsx.utils.book_append_sheet(workbookOut, worksheetOut, 'Duplicatas');
       xlsx.writeFile(workbookOut, outputDuplicatasPath);
-      console.log(`📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`);
+      console.log(
+        `📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`,
+      );
     } else {
       console.log('✅ Nenhuma duplicata para reportar.');
     }

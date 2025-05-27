@@ -3,7 +3,7 @@ import * as fs from 'fs';
 
 function normalizeText(str: string): string {
   return str
-    .normalize("NFD")
+    .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
 }
@@ -12,8 +12,11 @@ export async function readExcelFile(filePath: string): Promise<any[]> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.getWorksheet(1);
-  
-  console.log("Planilhas disponíveis:", workbook.worksheets.map(sheet => sheet.name));
+
+  console.log(
+    'Planilhas disponíveis:',
+    workbook.worksheets.map((sheet) => sheet.name),
+  );
   const rows: any[] = [];
 
   worksheet.eachRow((row, rowNumber) => {
@@ -34,32 +37,50 @@ export function transformarRegra336(rows: any[]): string[] {
     if (codigoRelatorio !== 336) return;
 
     const filial = row[2]?.toString().trim();
-    if (!["6", "9"].includes(filial)) return;
+    if (!['6', '9'].includes(filial)) return;
 
-    const local = filial === "6" ? "0001" : "0002";
-    const cnpjCliente = row[8] ? normalizeText(row[8].toString()) : "CNPJ_CLIENTE";
-    const historicoG = row[7] ? normalizeText(row[7].toString().trim()) : "HIST_G";
-    const historicoI = row[9] ? normalizeText(row[9].toString().trim()) : "HIST_I";
+    const local = filial === '6' ? '0001' : '0002';
+    const cnpjCliente = row[8]
+      ? normalizeText(row[8].toString())
+      : 'CNPJ_CLIENTE';
+    const historicoG = row[7]
+      ? normalizeText(row[7].toString().trim())
+      : 'HIST_G';
+    const historicoI = row[9]
+      ? normalizeText(row[9].toString().trim())
+      : 'HIST_I';
     const historicoBase = `${historicoI} - ${historicoG}`;
 
-    const dataBaixa = row[18] ? row[18].toString().split(" ")[0] : "DATA_INVALIDA";
+    const dataBaixa = row[18]
+      ? row[18].toString().split(' ')[0]
+      : 'DATA_INVALIDA';
 
     const valorDesdobramento = parseFloat(row[15] || 0).toFixed(2);
-    const jurosRecebidos = (parseFloat(row[30] || 0) + parseFloat(row[32] || 0)).toFixed(2);
+    const jurosRecebidos = (
+      parseFloat(row[30] || 0) + parseFloat(row[32] || 0)
+    ).toFixed(2);
     const desconto = parseFloat(row[29] || 0).toFixed(2);
     const multa = parseFloat(row[31] || 0).toFixed(2);
 
     if (parseFloat(valorDesdobramento) > 0) {
-      output.push(`${local};${dataBaixa};893;${cnpjCliente};${valorDesdobramento};2081;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;${cnpjCliente};${valorDesdobramento};2081;${historicoBase}`,
+      );
     }
     if (parseFloat(jurosRecebidos) > 0) {
-      output.push(`${local};${dataBaixa};893;1120;${jurosRecebidos};1202;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;1120;${jurosRecebidos};1202;${historicoBase}`,
+      );
     }
     if (parseFloat(desconto) > 0) {
-      output.push(`${local};${dataBaixa};1377;893;${desconto};2082;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};1377;893;${desconto};2082;${historicoBase}`,
+      );
     }
     if (parseFloat(multa) > 0) {
-      output.push(`${local};${dataBaixa};893;1112;${multa};1997;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;1112;${multa};1997;${historicoBase}`,
+      );
     }
   });
 
@@ -69,7 +90,7 @@ export function transformarRegra336(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
 
@@ -79,7 +100,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   console.log(`Arquivo salvo com ${data.length} linhas em: ${outputPath}`);
 }
 
-export async function processarArquivo336(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo336(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento da Regra 336...');
     const rows = await readExcelFile(inputExcelPath);

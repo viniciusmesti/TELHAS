@@ -1,4 +1,7 @@
-import { processarArquivo289Telhacao, exportToTxt289 } from './ProcessarArquivo289';
+import {
+  processarArquivo289Telhacao,
+  exportToTxt289,
+} from './ProcessarArquivo289';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as xlsx from 'xlsx';
@@ -8,29 +11,58 @@ async function testarProcessamento() {
     console.log('Iniciando o teste da regra TELHAÇO MARINGÁ 289...');
 
     // Define a pasta base onde estão os arquivos de entrada e saída
-    const baseDir = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAÇO');
+    const baseDir = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAÇO',
+    );
 
     // Caminhos de entrada
-    const inputDuplicatasPath = path.join(baseDir, 'uploads', 'DUPLICATAS EM ABERTO.xlsx');
+    const inputDuplicatasPath = path.join(
+      baseDir,
+      'uploads',
+      'DUPLICATAS EM ABERTO.xlsx',
+    );
     const inputPagamentosPath = path.join(baseDir, 'uploads', '289.xlsx');
 
     // Caminhos de saída
-    const outputContabilPath = path.join(baseDir, 'saida', 'contabil', 'contabil289_telhaço.txt');
-    const outputFiscalPath = path.join(baseDir, 'saida', 'fiscal', 'fiscal289_telhaço.txt');
-    const outputDuplicatasPath = path.join(baseDir, 'saida', 'duplicatas', 'duplicatas_nao_encontradas289_telhaço.xlsx');
+    const outputContabilPath = path.join(
+      baseDir,
+      'saida',
+      'contabil',
+      'contabil289_telhaço.txt',
+    );
+    const outputFiscalPath = path.join(
+      baseDir,
+      'saida',
+      'fiscal',
+      'fiscal289_telhaço.txt',
+    );
+    const outputDuplicatasPath = path.join(
+      baseDir,
+      'saida',
+      'duplicatas',
+      'duplicatas_nao_encontradas289_telhaço.xlsx',
+    );
 
     // Cria os diretórios de saída, se não existirem
-    [path.dirname(outputContabilPath), path.dirname(outputFiscalPath), path.dirname(outputDuplicatasPath)]
-      .forEach(dir => {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-      });
+    [
+      path.dirname(outputContabilPath),
+      path.dirname(outputFiscalPath),
+      path.dirname(outputDuplicatasPath),
+    ].forEach((dir) => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    });
 
     // Executa o processamento
     const { contabil, fiscal, duplicatas } = await processarArquivo289Telhacao(
       inputPagamentosPath,
-      inputDuplicatasPath
+      inputDuplicatasPath,
     );
 
     // Exporta os arquivos TXT
@@ -43,7 +75,9 @@ async function testarProcessamento() {
       const worksheetOut = xlsx.utils.json_to_sheet(duplicatas);
       xlsx.utils.book_append_sheet(workbookOut, worksheetOut, 'Duplicatas');
       xlsx.writeFile(workbookOut, outputDuplicatasPath);
-      console.log(`📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`);
+      console.log(
+        `📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`,
+      );
     } else {
       console.log('✅ Nenhuma duplicata para reportar.');
     }

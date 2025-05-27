@@ -2,22 +2,22 @@ import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 
 // Locais de saida
-const LOCAL_MATRIZ    = '0001';  
-const LOCAL_FILIAL_2  = '0002';
-const LOCAL_FILIAL_3  = '0003';
+const LOCAL_MATRIZ = '0001';
+const LOCAL_FILIAL_2 = '0002';
+const LOCAL_FILIAL_3 = '0003';
 
 // Contas contábeis fixas
-const CONTA_CHEQUES_RECEBER       = '1483';
-const CONTA_C_C_MATRIZ            = '1514';
-const CONTA_ADIANTAMENTO_CLIENTE  = '893';
-const CONTA_BANCO_FILIAL_2        = '1513';
-const CONTA_BANCO_FILIAL_3        = '5104';
+const CONTA_CHEQUES_RECEBER = '1483';
+const CONTA_C_C_MATRIZ = '1514';
+const CONTA_ADIANTAMENTO_CLIENTE = '893';
+const CONTA_BANCO_FILIAL_2 = '1513';
+const CONTA_BANCO_FILIAL_3 = '5104';
 
 // Tipo de relatório a ser processado
 const TIPO_RELATORIO_PROCESSAR = '257/2';
 
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, '');
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 // Constroi o histórico para os lançamentos de Adiantamentos de Cliente.
@@ -39,7 +39,7 @@ function buildLine(
   campoBanco: string,
   conta: string,
   valor: string,
-  historico: string
+  historico: string,
 ): string {
   return `${local};${dataBaixa};${campoBanco};${conta};${valor};${historico}`;
 }
@@ -64,7 +64,9 @@ function processRow(row: any[], rowIndex: number): string[] {
   //Válida o tipo de relátorio (COluna "A")
   const tipoRelatorio = row[1]?.toString().trim();
   if (tipoRelatorio !== TIPO_RELATORIO_PROCESSAR) {
-    console.log(`Linha ${rowIndex + 1} ignorada: Tipo de relatório ${tipoRelatorio} não corresponde a ${TIPO_RELATORIO_PROCESSAR}.`);
+    console.log(
+      `Linha ${rowIndex + 1} ignorada: Tipo de relatório ${tipoRelatorio} não corresponde a ${TIPO_RELATORIO_PROCESSAR}.`,
+    );
     return outputLines;
   }
 
@@ -75,55 +77,148 @@ function processRow(row: any[], rowIndex: number): string[] {
     return outputLines;
   }
 
-  const banco       = row[22]?.toString() || '';
-  const dataBaixa   = row[14]?.split(' ')[0] || '';
-  const valorBaixa  = parseFloat(row[19] || '0').toFixed(2);  
+  const banco = row[22]?.toString() || '';
+  const dataBaixa = row[14]?.split(' ')[0] || '';
+  const valorBaixa = parseFloat(row[19] || '0').toFixed(2);
   const nomeCliente = row[7] ? normalizeText(row[7].toString().trim()) : '';
-  const docNumero   = row[9] ? normalizeText(row[9].toString().trim()) : '';
+  const docNumero = row[9] ? normalizeText(row[9].toString().trim()) : '';
 
   const historicoAdiant = buildHistoricoAdiant(nomeCliente);
-  const historicoCheq   = buildHistoricoCheq(nomeCliente, docNumero);
+  const historicoCheq = buildHistoricoCheq(nomeCliente, docNumero);
 
   // Processar conforme a empresa - Coluna B
   switch (empresa) {
-
     // Adiantamento do cliente
     case 513:
-      outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_ADIANTAMENTO_CLIENTE, valorBaixa, historicoAdiant));
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_ADIANTAMENTO_CLIENTE,
+          valorBaixa,
+          historicoAdiant,
+        ),
+      );
       break;
 
-    case 514: 
-      outputLines.push(buildLine(LOCAL_FILIAL_2, dataBaixa, CONTA_C_C_MATRIZ, CONTA_ADIANTAMENTO_CLIENTE, valorBaixa, historicoAdiant));
-      outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_BANCO_FILIAL_2, valorBaixa, historicoAdiant));
+    case 514:
+      outputLines.push(
+        buildLine(
+          LOCAL_FILIAL_2,
+          dataBaixa,
+          CONTA_C_C_MATRIZ,
+          CONTA_ADIANTAMENTO_CLIENTE,
+          valorBaixa,
+          historicoAdiant,
+        ),
+      );
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_BANCO_FILIAL_2,
+          valorBaixa,
+          historicoAdiant,
+        ),
+      );
       break;
 
     case 515:
-      outputLines.push(buildLine(LOCAL_FILIAL_3, dataBaixa, CONTA_C_C_MATRIZ, CONTA_ADIANTAMENTO_CLIENTE, valorBaixa, historicoAdiant));
-      outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_BANCO_FILIAL_3, valorBaixa, historicoAdiant));
+      outputLines.push(
+        buildLine(
+          LOCAL_FILIAL_3,
+          dataBaixa,
+          CONTA_C_C_MATRIZ,
+          CONTA_ADIANTAMENTO_CLIENTE,
+          valorBaixa,
+          historicoAdiant,
+        ),
+      );
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_BANCO_FILIAL_3,
+          valorBaixa,
+          historicoAdiant,
+        ),
+      );
       break;
 
     // Cheuqes a receber
-    case 13: 
-      outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_CHEQUES_RECEBER, valorBaixa, historicoCheq));
+    case 13:
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_CHEQUES_RECEBER,
+          valorBaixa,
+          historicoCheq,
+        ),
+      );
       break;
 
     case 14:
-      outputLines.push(buildLine(LOCAL_FILIAL_2, dataBaixa, CONTA_C_C_MATRIZ, CONTA_CHEQUES_RECEBER, valorBaixa, historicoCheq));
-      outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_BANCO_FILIAL_2, valorBaixa, historicoCheq));
+      outputLines.push(
+        buildLine(
+          LOCAL_FILIAL_2,
+          dataBaixa,
+          CONTA_C_C_MATRIZ,
+          CONTA_CHEQUES_RECEBER,
+          valorBaixa,
+          historicoCheq,
+        ),
+      );
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_BANCO_FILIAL_2,
+          valorBaixa,
+          historicoCheq,
+        ),
+      );
       break;
 
-      case 15:
-        outputLines.push(buildLine(LOCAL_FILIAL_3, dataBaixa, CONTA_C_C_MATRIZ, CONTA_CHEQUES_RECEBER, valorBaixa, historicoCheq));
-        outputLines.push(buildLine(LOCAL_MATRIZ, dataBaixa, banco, CONTA_BANCO_FILIAL_3, valorBaixa, historicoCheq));
-        break;
+    case 15:
+      outputLines.push(
+        buildLine(
+          LOCAL_FILIAL_3,
+          dataBaixa,
+          CONTA_C_C_MATRIZ,
+          CONTA_CHEQUES_RECEBER,
+          valorBaixa,
+          historicoCheq,
+        ),
+      );
+      outputLines.push(
+        buildLine(
+          LOCAL_MATRIZ,
+          dataBaixa,
+          banco,
+          CONTA_BANCO_FILIAL_3,
+          valorBaixa,
+          historicoCheq,
+        ),
+      );
+      break;
 
-      default:
-        console.log(`Linha ${rowIndex + 1} ignorada: Empresa ${empresa} nao reconhecida.`);
-        break;
+    default:
+      console.log(
+        `Linha ${rowIndex + 1} ignorada: Empresa ${empresa} nao reconhecida.`,
+      );
+      break;
   }
 
   if (outputLines.length) {
-    console.log(`Linha(s) adicionada(s) (Linha ${rowIndex + 1}): ${outputLines.join(' | ')}`);
+    console.log(
+      `Linha(s) adicionada(s) (Linha ${rowIndex + 1}): ${outputLines.join(' | ')}`,
+    );
   }
 
   return outputLines;
@@ -138,7 +233,9 @@ export function transformData(rows: any[]): string[] {
     output = output.concat(linhasProcessadas);
   });
 
-  console.log(`Transformação concluída. Total de linhas processadas: ${output.length}`);
+  console.log(
+    `Transformação concluída. Total de linhas processadas: ${output.length}`,
+  );
   return output;
 }
 
@@ -148,7 +245,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, content, { encoding: 'utf8' });
 }
 
-export async function processarArquivo257_2(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo257_2(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Lendo o arquivo Excel...');
     const rows = await readExcelFile(inputExcelPath);

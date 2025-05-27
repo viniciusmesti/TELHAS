@@ -18,11 +18,16 @@ const CNPJ_GRUPO1 = ['5', '7', '10', '11', '12'];
 const CNPJ_GRUPO2 = ['505', '507', '510', '511', '512'];
 
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/\p{Diacritic}/gu, '').replace(/\s+/g, ' ').trim();
+  return str
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export async function readExcelFile(filePath: string): Promise<any[]> {
-  if (!fs.existsSync(filePath)) throw new Error(`Arquivo não encontrado: ${filePath}`);
+  if (!fs.existsSync(filePath))
+    throw new Error(`Arquivo não encontrado: ${filePath}`);
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.worksheets[0];
@@ -44,7 +49,11 @@ export function processarRegra329(rows: any[]): string[] {
     }
 
     const empresa = row[2]?.toString().trim() || '';
-    const grupo = CNPJ_GRUPO1.includes(empresa) ? 1 : CNPJ_GRUPO2.includes(empresa) ? 2 : 0;
+    const grupo = CNPJ_GRUPO1.includes(empresa)
+      ? 1
+      : CNPJ_GRUPO2.includes(empresa)
+        ? 2
+        : 0;
 
     if (grupo === 0) {
       console.log(`Linha ${index + 1} ignorada - Empresa inválida: ${empresa}`);
@@ -62,19 +71,24 @@ export function processarRegra329(rows: any[]): string[] {
     const historico = `1850;${historicoG} - ${historicoI}`;
 
     const isMatriz =
-      (grupo === 1 && empresa === '5') ||
-      (grupo === 2 && empresa === '505');
+      (grupo === 1 && empresa === '5') || (grupo === 2 && empresa === '505');
 
-    const isFilialGrupo1 = grupo === 1 && ['7', '10', '11', '12'].includes(empresa);
-    const isFilialGrupo2 = grupo === 2 && ['507', '510', '511', '512'].includes(empresa);
+    const isFilialGrupo1 =
+      grupo === 1 && ['7', '10', '11', '12'].includes(empresa);
+    const isFilialGrupo2 =
+      grupo === 2 && ['507', '510', '511', '512'].includes(empresa);
 
     if (grupo === 1) {
       if (isMatriz) {
-        output.push(`${local};${dataBaixa};1483;${banco};${valor};${historico}`);
+        output.push(
+          `${local};${dataBaixa};1483;${banco};${valor};${historico}`,
+        );
       } else if (isFilialGrupo1) {
         output.push(`${local};${dataBaixa};1483;999;${valor};${historico}`);
         const contaExtra = CONTAS_EXTRA_MATRIZ[empresa];
-        output.push(`${MATRIZ_CODE};${dataBaixa};${contaExtra};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${dataBaixa};${contaExtra};${banco};${valor};${historico}`,
+        );
       }
     } else if (grupo === 2) {
       if (isMatriz) {
@@ -82,7 +96,9 @@ export function processarRegra329(rows: any[]): string[] {
       } else if (isFilialGrupo2) {
         output.push(`${local};${dataBaixa};863;999;${valor};${historico}`);
         const contaExtra = CONTAS_EXTRA_MATRIZ[empresa];
-        output.push(`${MATRIZ_CODE};${dataBaixa};${contaExtra};${banco};${valor};${historico}`);
+        output.push(
+          `${MATRIZ_CODE};${dataBaixa};${contaExtra};${banco};${valor};${historico}`,
+        );
       }
     }
   });
@@ -93,7 +109,7 @@ export function processarRegra329(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha processada. O arquivo não será gerado.");
+    console.log('Nenhuma linha processada. O arquivo não será gerado.');
     return;
   }
   data.push('');
@@ -101,7 +117,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   console.log(`✅ Arquivo salvo com ${data.length} linhas em: ${outputPath}`);
 }
 
-export async function processarArquivo329(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo329(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento da Regra 329...');
     const rows = await readExcelFile(inputExcelPath);

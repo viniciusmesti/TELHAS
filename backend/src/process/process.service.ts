@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { readExcelFile } from '../utils'; 
+import { readExcelFile } from '../utils';
 import { transformarRegra255 } from '../Regras/MAPA/255/transformarRegra255';
 import { exportToTxt } from '../Regras/MAPA/255/processarArquivo255';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -12,7 +12,11 @@ export class ProcessService {
     private processingLogService: ProcessingLogService,
   ) {}
 
-  async processFile(inputExcelPath: string, outputTxtPath: string, processId: string): Promise<void> {
+  async processFile(
+    inputExcelPath: string,
+    outputTxtPath: string,
+    processId: string,
+  ): Promise<void> {
     try {
       console.log('📂 Lendo o arquivo Excel...');
       const rows = await readExcelFile(inputExcelPath);
@@ -44,7 +48,12 @@ export class ProcessService {
       console.error('❌ Erro ao processar o arquivo:', error);
 
       // Registrar erro no log
-      await this.processingLogService.createLog(inputExcelPath, outputTxtPath, 'Error', error.message);
+      await this.processingLogService.createLog(
+        inputExcelPath,
+        outputTxtPath,
+        'Error',
+        error.message,
+      );
 
       // Atualiza o status para erro
       await this.prisma.process.update({

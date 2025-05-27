@@ -7,26 +7,25 @@ import { TelhasProcessor } from './TelhasProcessor';
 
 export function createEmpresaProcessor(
   codigoSistema: string,
-  supabaseService: SupabaseService
+  supabaseService: SupabaseService,
 ): IEmpresaProcessor {
-
   switch (codigoSistema) {
-      case 'MAPA':
-      case '999':
-        return new MapaProcessor(supabaseService);
+    case 'MAPA':
+    case '999':
+      return new MapaProcessor(supabaseService);
 
-      case 'N&P':
-      case '000':
-        return new NpProcessor(supabaseService);
+    case 'N&P':
+    case '000':
+      return new NpProcessor(supabaseService);
 
-      case 'TELHAÇO':
-      case '111':
-        return new TelhacoProcessor(supabaseService);
+    case 'TELHAÇO':
+    case '111':
+      return new TelhacoProcessor(supabaseService);
 
-        case 'TELHAS':
-        case '222':
-          return new TelhasProcessor(supabaseService);
-        
+    case 'TELHAS':
+    case '222':
+      return new TelhasProcessor(supabaseService);
+
     default:
       throw new Error(`Empresa não suportada: ${codigoSistema}`);
   }

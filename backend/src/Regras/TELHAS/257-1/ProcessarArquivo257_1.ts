@@ -32,7 +32,7 @@ const CONTAS_FILIAIS: Record<number, string> = {
 const TIPO_RELATORIO_PROCESSAR = '257/1';
 
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/\u0300-\u036f/g, '');
+  return str.normalize('NFD').replace(/\u0300-\u036f/g, '');
 }
 
 export async function readExcelFile(filePath: string): Promise<any[]> {
@@ -69,14 +69,18 @@ function processRow(row: any[], rowIndex: number): string[] {
   } else if ([507, 510, 511, 512].includes(empresa)) {
     const filialCode = FILIAL_MAPPING[empresa];
     const contaFilial = CONTAS_FILIAIS[empresa];
-    outputLines.push(`${filialCode};${dataBaixa};${CONTA_CC_MATRIZ};${CONTA_ADIANTAMENTO_CLIENTE};${valorBaixa};${historico}`);
+    outputLines.push(
+      `${filialCode};${dataBaixa};${CONTA_CC_MATRIZ};${CONTA_ADIANTAMENTO_CLIENTE};${valorBaixa};${historico}`,
+    );
     linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${contaFilial};${valorBaixa};${historico}`;
   } else if (empresa === 5) {
     linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${CONTA_CHEQUES_RECEBER};${valorBaixa};1193;${nomeCliente} - ${docNumero}`;
   } else if ([7, 10, 11, 12].includes(empresa)) {
     const filialCode = FILIAL_MAPPING[empresa];
     const contaFilial = CONTAS_FILIAIS[empresa];
-    outputLines.push(`${filialCode};${dataBaixa};${CONTA_CC_MATRIZ};${CONTA_CHEQUES_RECEBER};${valorBaixa};1193;${nomeCliente} - ${docNumero}`);
+    outputLines.push(
+      `${filialCode};${dataBaixa};${CONTA_CC_MATRIZ};${CONTA_CHEQUES_RECEBER};${valorBaixa};1193;${nomeCliente} - ${docNumero}`,
+    );
     linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${contaFilial};${valorBaixa};1193;${nomeCliente} - ${docNumero}`;
   } else {
     console.log(`Empresa ${empresa} não mapeada (linha ${rowIndex + 1})`);
@@ -103,7 +107,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, content, { encoding: 'utf8' });
 }
 
-export async function processarArquivos257_1(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivos257_1(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     const rows = await readExcelFile(inputExcelPath);
     const transformedData = transformData(rows);

@@ -5,7 +5,7 @@ import * as fs from 'fs';
    INTERFACES E TIPOS
    =================================================== */
 /**
- * Interface que define a estrutura de uma linha do Excel DataFormatter 
+ * Interface que define a estrutura de uma linha do Excel DataFormatter
  * @interface ExcelRow
  * @property {any} [key: number] - Valor da célula na coluna especificada
  */
@@ -45,11 +45,11 @@ interface ProcessamentoResultado {
  * @enum {number}
  */
 enum TipoEmpresa {
-  MATRIZ = 5,    
-  FILIAL3 = 7,   
-  FILIAL4 = 10,    
+  MATRIZ = 5,
+  FILIAL3 = 7,
+  FILIAL4 = 10,
   FILIAL5 = 11,
-  FILIAL6 = 12
+  FILIAL6 = 12,
 }
 
 /**
@@ -57,8 +57,8 @@ enum TipoEmpresa {
  * @enum {string}
  */
 enum TipoTitulo {
-  IGNORAR_16 = '16',  // Título tipo 16 a ser ignorado
-  IGNORAR_17 = '17'   // Título tipo 17 a ser ignorado
+  IGNORAR_16 = '16', // Título tipo 16 a ser ignorado
+  IGNORAR_17 = '17', // Título tipo 17 a ser ignorado
 }
 
 /**
@@ -66,11 +66,11 @@ enum TipoTitulo {
  * @enum {string}
  */
 enum TipoOperacao {
-  ADIANTAMENTO_FORNECEDORES = '1604',  // Operação de adiantamento a fornecedores
-  ENERGIA_ELETRICA = '1152',           // Operação de energia elétrica
-  DESPESAS_BANCARIAS = '1601',         // Operação de despesas bancárias
-  DESPESAS_DIVERSAS_1 = '1610',        // Operação de despesas diversas tipo 1
-  DESPESAS_DIVERSAS_2 = '1602'         // Operação de despesas diversas tipo 2
+  ADIANTAMENTO_FORNECEDORES = '1604', // Operação de adiantamento a fornecedores
+  ENERGIA_ELETRICA = '1152', // Operação de energia elétrica
+  DESPESAS_BANCARIAS = '1601', // Operação de despesas bancárias
+  DESPESAS_DIVERSAS_1 = '1610', // Operação de despesas diversas tipo 1
+  DESPESAS_DIVERSAS_2 = '1602', // Operação de despesas diversas tipo 2
 }
 
 /**
@@ -78,25 +78,25 @@ enum TipoOperacao {
  * @enum {number}
  */
 enum ColunaExcel {
-  RELATORIO = 1,          // Coluna do relatório
-  IMPORT_LOCATION = 2,    // Coluna da localização de importação
-  TIPO_TITULO = 11,       // Coluna do tipo de título
-  HISTORICO_I = 9,        // Coluna do histórico I
-  HISTORICO_G = 7,        // Coluna do histórico G
-  NATUREZA = 25,          // Coluna da natureza
-  CONTA_BANCARIA = 22,    // Coluna da conta bancária
-  DATA = 18,              // Coluna da data
-  VALOR_O = 15,           // Coluna do valor O
-  VALOR_S = 19,           // Coluna do valor S
-  VALOR_AC = 29,          // Coluna do valor AC
-  VALOR_AD = 30,          // Coluna do valor AD
-  VALOR_AE = 31,          // Coluna do valor AE
-  VALOR_AF = 32,          // Coluna do valor AF
-  VALOR_AG = 33,          // Coluna do valor AG
-  TIPO_OPERACAO = 36,     // Coluna do tipo de operação
-  HISTORICO_AM = 39,      // Coluna do histórico AM
-  DUPLICATA = 9,          // Coluna da duplicata
-  CONTA_BANCARIA_W = 23   // Coluna da conta bancária W
+  RELATORIO = 1, // Coluna do relatório
+  IMPORT_LOCATION = 2, // Coluna da localização de importação
+  TIPO_TITULO = 11, // Coluna do tipo de título
+  HISTORICO_I = 9, // Coluna do histórico I
+  HISTORICO_G = 7, // Coluna do histórico G
+  NATUREZA = 25, // Coluna da natureza
+  CONTA_BANCARIA = 22, // Coluna da conta bancária
+  DATA = 18, // Coluna da data
+  VALOR_O = 15, // Coluna do valor O
+  VALOR_S = 19, // Coluna do valor S
+  VALOR_AC = 29, // Coluna do valor AC
+  VALOR_AD = 30, // Coluna do valor AD
+  VALOR_AE = 31, // Coluna do valor AE
+  VALOR_AF = 32, // Coluna do valor AF
+  VALOR_AG = 33, // Coluna do valor AG
+  TIPO_OPERACAO = 36, // Coluna do tipo de operação
+  HISTORICO_AM = 39, // Coluna do histórico AM
+  DUPLICATA = 9, // Coluna da duplicata
+  CONTA_BANCARIA_W = 23, // Coluna da conta bancária W
 }
 
 /* ===================================================
@@ -107,11 +107,11 @@ enum ColunaExcel {
  * @const {Object}
  */
 const TELHAS_IMPORT_MAP: { [key: number]: string } = {
-  [TipoEmpresa.MATRIZ]: '0001',  // Código para matriz
-  [TipoEmpresa.FILIAL3]: '0003',  // Código para filial
-  [TipoEmpresa.FILIAL4]: '0004',   // Código para filial
-  [TipoEmpresa.FILIAL5]: '0005',    // Código para filial
-  [TipoEmpresa.FILIAL6]: '0006', 
+  [TipoEmpresa.MATRIZ]: '0001', // Código para matriz
+  [TipoEmpresa.FILIAL3]: '0003', // Código para filial
+  [TipoEmpresa.FILIAL4]: '0004', // Código para filial
+  [TipoEmpresa.FILIAL5]: '0005', // Código para filial
+  [TipoEmpresa.FILIAL6]: '0006',
 };
 
 /**
@@ -119,9 +119,9 @@ const TELHAS_IMPORT_MAP: { [key: number]: string } = {
  * @const {Map}
  */
 const TELHAS_EXTRA_ADIANT_MAP = new Map<number, string>([
-  [TipoEmpresa.FILIAL3, '713'],  // Código para filial 2
-  [TipoEmpresa.FILIAL4, '2047'],  // Código para filial 3
-  [TipoEmpresa.FILIAL5, '2048'],   // Código para filial 4
+  [TipoEmpresa.FILIAL3, '713'], // Código para filial 2
+  [TipoEmpresa.FILIAL4, '2047'], // Código para filial 3
+  [TipoEmpresa.FILIAL5, '2048'], // Código para filial 4
   [TipoEmpresa.FILIAL6, '2255'],
 ]);
 
@@ -135,17 +135,15 @@ function getExtraAccount(loc: number): string {
   return EXTRA_ACCOUNT_MAP.get(loc) || '';
 }
 
-
-
 /**
  * Mapeamento extra para descontos (filial)
  * @const {Map}
  */
 const TELHAS_EXTRA_DISCOUNT_MAP = new Map<number, string>([
-  [TipoEmpresa.FILIAL3, '713'],  // Código para filial 2
-  [TipoEmpresa.FILIAL4, '2047'],  // Código para filial 3
-  [TipoEmpresa.FILIAL5, '2048'],   // Código para filial 4
-  [TipoEmpresa.FILIAL6, '2255'],  // Código para filial 4
+  [TipoEmpresa.FILIAL3, '713'], // Código para filial 2
+  [TipoEmpresa.FILIAL4, '2047'], // Código para filial 3
+  [TipoEmpresa.FILIAL5, '2048'], // Código para filial 4
+  [TipoEmpresa.FILIAL6, '2255'], // Código para filial 4
 ]);
 
 /**
@@ -153,9 +151,9 @@ const TELHAS_EXTRA_DISCOUNT_MAP = new Map<number, string>([
  * @const {Map}
  */
 const TELHAS_EXTRA_JUROS_MULTA_MAP = new Map<number, string>([
-  [TipoEmpresa.FILIAL3, '713'],  // Código para filial 2
-  [TipoEmpresa.FILIAL4, '2047'],  // Código para filial 3
-  [TipoEmpresa.FILIAL5, '2048'],   // Código para filial 4
+  [TipoEmpresa.FILIAL3, '713'], // Código para filial 2
+  [TipoEmpresa.FILIAL4, '2047'], // Código para filial 3
+  [TipoEmpresa.FILIAL5, '2048'], // Código para filial 4
   [TipoEmpresa.FILIAL6, '2255'],
 ]);
 
@@ -164,10 +162,21 @@ const TELHAS_EXTRA_JUROS_MULTA_MAP = new Map<number, string>([
  * @const {Set}
  */
 const IGNORED_NATUREZAS = new Set([
-  '110303', '110308', '110304', '110309',
-  '320101', '180101', '140107', '140108',
-  '140411', '180102', '140109', '140507',
-  '140137', '140138', '140111'
+  '110303',
+  '110308',
+  '110304',
+  '110309',
+  '320101',
+  '180101',
+  '140107',
+  '140108',
+  '140411',
+  '180102',
+  '140109',
+  '140507',
+  '140137',
+  '140138',
+  '140111',
 ]);
 
 /**
@@ -175,7 +184,6 @@ const IGNORED_NATUREZAS = new Set([
  * @const {Set}
  */
 const IGNORED_OPERACOES = new Set(['1660', '16', '17']);
-
 
 // Conta-corrente fixa para lançamentos em filial (desconto/taxa)
 const CONTA_CORRENTE_FILIAL = '712';
@@ -185,9 +193,9 @@ const CONTA_CORRENTE_FILIAL = '712';
  * @const {Object}
  */
 const MAP_DIVERSAS: { [natureza: string]: string } = {
-  '110310': '857',   // Natureza 110310 mapeada para conta 857 
-  '140201': '908',   // Natureza 140201 mapeada para conta 908
-  '320206': '2381',  // Natureza 320206 mapeada para conta 2381 1516
+  '110310': '857', // Natureza 110310 mapeada para conta 857
+  '140201': '908', // Natureza 140201 mapeada para conta 908
+  '320206': '2381', // Natureza 320206 mapeada para conta 2381 1516
   '130302': '1288',
   '140302': '907',
   '140112': '903',
@@ -240,7 +248,7 @@ const MAP_DIVERSAS: { [natureza: string]: string } = {
   '140702': '1302',
   '140125': '2381',
   '140701': '1276',
-  '140308': '1297'
+  '140308': '1297',
 };
 
 /* ===================================================
@@ -253,17 +261,15 @@ const MAP_DIVERSAS: { [natureza: string]: string } = {
  * @returns {string} Texto limpo
  */
 function removerCaracteresEspeciais(texto: string): string {
-  console.log("Texto original:", texto);
+  console.log('Texto original:', texto);
   const resultado = texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, '')               // remove acentos
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove acentos
     .replace(/[ºª^~'""''–—°"´`\u2013\u2014]/g, '') // remove outros caracteres específicos (incluindo – e —)
     .trim();
-  console.log("Texto limpo:", resultado);
+  console.log('Texto limpo:', resultado);
   return resultado;
 }
-
-
 
 /* ===================================================
    CLASSES DE PROCESSAMENTO
@@ -287,8 +293,11 @@ class ExcelProcessor {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Duplicatas');
     if (data.length > 0) {
-      worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
-      data.forEach(item => worksheet.addRow(item));
+      worksheet.columns = Object.keys(data[0]).map((key) => ({
+        header: key,
+        key,
+      }));
+      data.forEach((item) => worksheet.addRow(item));
     }
     await workbook.xlsx.writeFile(outputPath);
   }
@@ -300,7 +309,7 @@ class DataFormatter {
     return removerCaracteresEspeciais(text);
   }
 
-    /**
+  /**
    * Formata uma data no formato dd/MM/yy
    * @param {string} dateStr - Data no formato yyyy-mm-dd
    * @returns {string} Data formatada
@@ -314,7 +323,7 @@ class DataFormatter {
     return dateStr;
   }
 
-    /**
+  /**
    * Extrai e formata a data de uma linha do Excel
    * @param {ExcelRow} row - Linha do Excel
    * @returns {string} Data formatada
@@ -329,7 +338,6 @@ class DataFormatter {
   }
 }
 
-
 /**
  * Classe responsável por processar duplicatas
  * @class DuplicataProcessor
@@ -340,11 +348,13 @@ class DuplicataProcessor {
    * @param {string} caminhoArquivoDuplicatas - Caminho do arquivo de duplicatas
    * @returns {Promise<Map<string, string>>} Mapeamento de duplicatas
    */
-  static async carregarMapeamentoDuplicatas(caminhoArquivoDuplicatas: string): Promise<Map<string, string>> {
+  static async carregarMapeamentoDuplicatas(
+    caminhoArquivoDuplicatas: string,
+  ): Promise<Map<string, string>> {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(caminhoArquivoDuplicatas);
     const worksheet = workbook.worksheets[0];
-    
+
     const mapeamentoDuplicatas = new Map<string, string>();
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber > 1) {
@@ -352,11 +362,16 @@ class DuplicataProcessor {
         const chaveDuplicata = row.getCell(1).toString().trim();
         const valorColunaF = row.getCell(6).toString().trim();
         if (numeroDuplicata && chaveDuplicata) {
-          mapeamentoDuplicatas.set(numeroDuplicata, JSON.stringify({ chaveDuplicata, valorColunaF }));
+          mapeamentoDuplicatas.set(
+            numeroDuplicata,
+            JSON.stringify({ chaveDuplicata, valorColunaF }),
+          );
         }
       }
     });
-    console.log(`Mapeamento de duplicatas carregado: ${mapeamentoDuplicatas.size} entradas`);
+    console.log(
+      `Mapeamento de duplicatas carregado: ${mapeamentoDuplicatas.size} entradas`,
+    );
     return mapeamentoDuplicatas;
   }
 
@@ -369,14 +384,19 @@ class DuplicataProcessor {
     const output: any[] = [];
     rows.forEach((row, index) => {
       const tipoTitulo = row[ColunaExcel.TIPO_TITULO]?.toString().trim();
-      if ([TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(tipoTitulo as TipoTitulo)) return;
+      if (
+        [TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(
+          tipoTitulo as TipoTitulo,
+        )
+      )
+        return;
 
       const duplicata = row[ColunaExcel.DUPLICATA]?.toString().trim();
       if (!duplicata) {
         output.push({
           Linha: index + 1,
-          "Número Duplicata": 'NÃO INFORMADO',
-          "Observação": "Duplicata não encontrada"
+          'Número Duplicata': 'NÃO INFORMADO',
+          Observação: 'Duplicata não encontrada',
         });
       }
     });
@@ -396,15 +416,26 @@ class LancamentoProcessor {
    * @returns {string} Linha formatada
    */
   static processarExtraLancamentoMatrizDuplicata(row: ExcelRow): string {
-    const dataFormatada = DataFormatter.formatDate(DataFormatter.parseISODateFromRow(row));
+    const dataFormatada = DataFormatter.formatDate(
+      DataFormatter.parseISODateFromRow(row),
+    );
     const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
 
-    const localImportacao = importLocation === TipoEmpresa.FILIAL3 ? "0001" : TELHAS_IMPORT_MAP[importLocation];
-    const valor = row[ColunaExcel.VALOR_S] ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2) : "0.00";
+    const localImportacao =
+      importLocation === TipoEmpresa.FILIAL3
+        ? '0001'
+        : TELHAS_IMPORT_MAP[importLocation];
+    const valor = row[ColunaExcel.VALOR_S]
+      ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2)
+      : '0.00';
     const codV = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim();
-    const histI = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_I]?.toString() || '');
-    const histG = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_G]?.toString() || '');
-    
+    const histI = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_I]?.toString() || '',
+    );
+    const histG = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_G]?.toString() || '',
+    );
+
     const extraAcc = getExtraAccount(importLocation);
     return `${localImportacao};${dataFormatada};${extraAcc};${codV};${valor};270;${histI} - ${histG}`;
   }
@@ -417,35 +448,54 @@ class LancamentoProcessor {
   static processarAdiantamentoFornecedores(row: ExcelRow): string[] {
     const results: string[] = [];
     const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
-    if (![TipoEmpresa.MATRIZ, TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, TipoEmpresa.FILIAL6]
-        .includes(importLocation)) return results;
-  
+    if (
+      ![
+        TipoEmpresa.MATRIZ,
+        TipoEmpresa.FILIAL3,
+        TipoEmpresa.FILIAL4,
+        TipoEmpresa.FILIAL5,
+        TipoEmpresa.FILIAL6,
+      ].includes(importLocation)
+    )
+      return results;
+
     const localImportacao = TELHAS_IMPORT_MAP[importLocation];
-    const contaBancaria   = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim() || '';
-    const dataISO         = DataFormatter.parseISODateFromRow(row);
-    const dataFormatada   = DataFormatter.formatDate(dataISO);
-    const valorS          = parseFloat(row[ColunaExcel.VALOR_S]  || '0').toFixed(2);
-    const historicoG      = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_G]?.toString() || '');
-    const historicoBase   = `2164;${historicoG} CONFORME RELATÓRIO FINANCEIRO`;
-  
+    const contaBancaria =
+      row[ColunaExcel.CONTA_BANCARIA]?.toString().trim() || '';
+    const dataISO = DataFormatter.parseISODateFromRow(row);
+    const dataFormatada = DataFormatter.formatDate(dataISO);
+    const valorS = parseFloat(row[ColunaExcel.VALOR_S] || '0').toFixed(2);
+    const historicoG = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_G]?.toString() || '',
+    );
+    const historicoBase = `2164;${historicoG} CONFORME RELATÓRIO FINANCEIRO`;
+
     if (contaBancaria === '13') {
-      results.push(`${localImportacao};${dataFormatada};579;13;${valorS};${historicoBase}`);
+      results.push(
+        `${localImportacao};${dataFormatada};579;13;${valorS};${historicoBase}`,
+      );
     } else {
       if (importLocation === TipoEmpresa.MATRIZ) {
-        results.push(`${localImportacao};${dataFormatada};579;${contaBancaria};${valorS};${historicoBase}`);
+        results.push(
+          `${localImportacao};${dataFormatada};579;${contaBancaria};${valorS};${historicoBase}`,
+        );
       } else {
         // filial
-        results.push(`${localImportacao};${dataFormatada};579;999;${valorS};${historicoBase}`);
+        results.push(
+          `${localImportacao};${dataFormatada};579;999;${valorS};${historicoBase}`,
+        );
         // extra na matriz
         const extraAcc = getExtraAccount(importLocation);
         // <== usa contaBancaria, não codV
-        results.push(`0001;${dataFormatada};${extraAcc};${contaBancaria};${valorS};${historicoBase}`);
+        results.push(
+          `0001;${dataFormatada};${extraAcc};${contaBancaria};${valorS};${historicoBase}`,
+        );
       }
     }
 
     return results;
   }
-  
+
   /**
    * Processa despesas diversas
    * @param {ExcelRow} row - Linha do Excel
@@ -453,90 +503,149 @@ class LancamentoProcessor {
    */
   static processarDespesasDiversas(row: ExcelRow): string[] {
     const results: string[] = [];
-  
+
     // 1) filtra só matriz + filiais
     const loc = Number(row[ColunaExcel.IMPORT_LOCATION]);
-    if (![TipoEmpresa.MATRIZ, TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, TipoEmpresa.FILIAL6]
-        .includes(loc)) return results;
-  
+    if (
+      ![
+        TipoEmpresa.MATRIZ,
+        TipoEmpresa.FILIAL3,
+        TipoEmpresa.FILIAL4,
+        TipoEmpresa.FILIAL5,
+        TipoEmpresa.FILIAL6,
+      ].includes(loc)
+    )
+      return results;
+
     // 2) dados básicos
-    const local     = TELHAS_IMPORT_MAP[loc];
-    const codV      = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim() || '';
-    const codW      = row[ColunaExcel.CONTA_BANCARIA_W]?.toString().trim() || '';
-    const data      = DataFormatter.formatDate(DataFormatter.parseISODateFromRow(row));
-  
+    const local = TELHAS_IMPORT_MAP[loc];
+    const codV = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim() || '';
+    const codW = row[ColunaExcel.CONTA_BANCARIA_W]?.toString().trim() || '';
+    const data = DataFormatter.formatDate(
+      DataFormatter.parseISODateFromRow(row),
+    );
+
     // ignora sócios
-    if (['50','52','111'].includes(codV) && ['50','52','111'].includes(codW)) {
+    if (
+      ['50', '52', '111'].includes(codV) &&
+      ['50', '52', '111'].includes(codW)
+    ) {
       return results;
     }
-  
+
     // 3) monta histórico
-    const iText      = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_I]?.toString() || '');
-    const gText      = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_G]?.toString() || '');
-    const aText      = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_AM]?.toString() || '');
-    const historico  = `292;CFE. DOC ${iText} - ${gText} - ${aText}`;
-  
+    const iText = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_I]?.toString() || '',
+    );
+    const gText = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_G]?.toString() || '',
+    );
+    const aText = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_AM]?.toString() || '',
+    );
+    const historico = `292;CFE. DOC ${iText} - ${gText} - ${aText}`;
+
     // 4) débito (natureza)
-    const nat        = row[ColunaExcel.NATUREZA]?.toString().trim() || '';
-    const contaDeb   = MAP_DIVERSAS[nat] ?? '2381';
-  
+    const nat = row[ColunaExcel.NATUREZA]?.toString().trim() || '';
+    const contaDeb = MAP_DIVERSAS[nat] ?? '2381';
+
     // 5) valores
-    const vO         = parseFloat(row[ColunaExcel.VALOR_O]  || '0').toFixed(2);
-    const vAC        = parseFloat(row[ColunaExcel.VALOR_AC] || '0').toFixed(2);
-    const vAD        = parseFloat(row[ColunaExcel.VALOR_AD] || '0').toFixed(2);
-    const vAE        = parseFloat(row[ColunaExcel.VALOR_AE] || '0').toFixed(2);
-    const vAF        = parseFloat(row[ColunaExcel.VALOR_AF] || '0').toFixed(2);
+    const vO = parseFloat(row[ColunaExcel.VALOR_O] || '0').toFixed(2);
+    const vAC = parseFloat(row[ColunaExcel.VALOR_AC] || '0').toFixed(2);
+    const vAD = parseFloat(row[ColunaExcel.VALOR_AD] || '0').toFixed(2);
+    const vAE = parseFloat(row[ColunaExcel.VALOR_AE] || '0').toFixed(2);
+    const vAF = parseFloat(row[ColunaExcel.VALOR_AF] || '0').toFixed(2);
     const jurosTotal = (parseFloat(vAD) + parseFloat(vAF)).toFixed(2);
-  
+
     // 6) caso CAIXA
     if (codV === '13') {
       results.push(`${local};${data};${contaDeb};13;${vO};${historico}`);
-      if (vAC !== '0.00')    results.push(`${local};${data};13;1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`);
-      if (vAF !== '0.00')    results.push(`${local};${data};13;1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`);
-      if (jurosTotal!=='0.00') results.push(`${local};${data};1381;13;${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`);
-      if (vAE !== '0.00')    results.push(`${local};${data};1383;13;${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`);
+      if (vAC !== '0.00')
+        results.push(
+          `${local};${data};13;1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`,
+        );
+      if (vAF !== '0.00')
+        results.push(
+          `${local};${data};13;1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`,
+        );
+      if (jurosTotal !== '0.00')
+        results.push(
+          `${local};${data};1381;13;${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`,
+        );
+      if (vAE !== '0.00')
+        results.push(
+          `${local};${data};1383;13;${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`,
+        );
       return results;
     }
-  
+
     // 7a) banco na MATRIZ
     if (loc === TipoEmpresa.MATRIZ) {
       results.push(`${local};${data};${contaDeb};${codV};${vO};${historico}`);
-      if (vAC!=='0.00')  results.push(`${local};${data};${codV};1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`);
-      if (vAF!=='0.00')  results.push(`${local};${data};${codV};1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`);
-      if (jurosTotal!=='0.00') results.push(`${local};${data};1381;${codV};${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`);
-      if (vAE!=='0.00')  results.push(`${local};${data};1383;${codV};${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`);
+      if (vAC !== '0.00')
+        results.push(
+          `${local};${data};${codV};1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`,
+        );
+      if (vAF !== '0.00')
+        results.push(
+          `${local};${data};${codV};1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`,
+        );
+      if (jurosTotal !== '0.00')
+        results.push(
+          `${local};${data};1381;${codV};${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`,
+        );
+      if (vAE !== '0.00')
+        results.push(
+          `${local};${data};1383;${codV};${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`,
+        );
       return results;
     }
-  
+
     // 7b) banco em FILIAIS → filial + extra na matriz
     // FILIAL: crédito = 999
     results.push(`${local};${data};${contaDeb};999;${vO};${historico}`);
     // MATRIZ: débito = extra da filial, crédito = banco
     const extraAcc = getExtraAccount(loc);
     results.push(`0001;${data};${extraAcc};${codV};${vO};${historico}`);
-  
+
     // sub-lançamentos (desconto, taxa, juros, multa):
-    if (vAC   !== '0.00') {
-      results.push(`${local};${data};712;1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`);
-      results.push(`0001;${data};${codV};712;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`);
+    if (vAC !== '0.00') {
+      results.push(
+        `${local};${data};712;1111;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`,
+      );
+      results.push(
+        `0001;${data};${codV};712;${vAC};0;Desconto s/ Duplic. N: ${iText} - ${gText}`,
+      );
     }
-    if (vAF   !== '0.00') {
-      results.push(`${local};${data};712;1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`);
-      results.push(`0001;${data};${codV};712;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`);
+    if (vAF !== '0.00') {
+      results.push(
+        `${local};${data};712;1111;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`,
+      );
+      results.push(
+        `0001;${data};${codV};712;${vAF};0;Taxa Administr. N: ${iText} - ${gText}`,
+      );
     }
     if (jurosTotal !== '0.00') {
-      results.push(`${local};${data};1381;999;${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`);
-      results.push(`0001;${data};${extraAcc};${codV};${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`);
+      results.push(
+        `${local};${data};1381;999;${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`,
+      );
+      results.push(
+        `0001;${data};${extraAcc};${codV};${jurosTotal};0;Pagto Juros s/ Duplic. N: ${iText} - ${gText}`,
+      );
     }
     if (vAE !== '0.00') {
-      results.push(`${local};${data};1383;999;${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`);
-      results.push(`0001;${data};${extraAcc};${codV};${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`);
+      results.push(
+        `${local};${data};1383;999;${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`,
+      );
+      results.push(
+        `0001;${data};${extraAcc};${codV};${vAE};0;Pagto Multa s/ Duplic. N: ${iText} - ${gText}`,
+      );
     }
-  
+
     // ✅ APLICANDO FILTRO PARA REMOVER LINHAS COM JUROS E MULTA DE VALOR 0.00
     return this.filtrarLinhasZeradasJurosMulta(results);
   }
-  
+
   /**
    * Remove apenas linhas com valor 0.00 e histórico contendo 'juros' ou 'multa'
    */
@@ -545,7 +654,10 @@ class LancamentoProcessor {
       const partes = linha.split(';');
       const valor = partes[4];
       const historico = partes[6].toLowerCase();
-      return !(valor === '0.00' && (historico.includes('juros') || historico.includes('multa')));
+      return !(
+        valor === '0.00' &&
+        (historico.includes('juros') || historico.includes('multa'))
+      );
     });
   }
 }
@@ -564,54 +676,86 @@ class EnergiaDespesasProcessor {
     const results: string[] = [];
     const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
     const localImportacao = TELHAS_IMPORT_MAP[importLocation];
-    
+
     const codV = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim();
     const codW = row[ColunaExcel.CONTA_BANCARIA_W]?.toString().trim();
-    
-    const ignoreSet = new Set(["50", "52", "111"]);
+
+    const ignoreSet = new Set(['50', '52', '111']);
     if (ignoreSet.has(codV) && ignoreSet.has(codW)) {
       return results;
     }
-    
-    const dataFormatada = DataFormatter.formatDate(DataFormatter.parseISODateFromRow(row));
-    const valor = row[ColunaExcel.VALOR_O] ? parseFloat(row[ColunaExcel.VALOR_O]).toFixed(2) : "0.00";
-    
-    const histI = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_I]?.toString() || '');
-    const histG = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_G]?.toString() || '');
-    const histAM = row[ColunaExcel.HISTORICO_AM] ? DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_AM].toString()) : '';
+
+    const dataFormatada = DataFormatter.formatDate(
+      DataFormatter.parseISODateFromRow(row),
+    );
+    const valor = row[ColunaExcel.VALOR_O]
+      ? parseFloat(row[ColunaExcel.VALOR_O]).toFixed(2)
+      : '0.00';
+
+    const histI = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_I]?.toString() || '',
+    );
+    const histG = DataFormatter.normalizeText(
+      row[ColunaExcel.HISTORICO_G]?.toString() || '',
+    );
+    const histAM = row[ColunaExcel.HISTORICO_AM]
+      ? DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_AM].toString())
+      : '';
     const historicoCompleto = `292;CFE. DOC ${histI} - ${histG} - ${histAM}`;
-    
+
     // Garantir que os valores são extraídos corretamente
-    const valorAC = row[ColunaExcel.VALOR_AC] ? row[ColunaExcel.VALOR_AC].toString().trim() : "0";
-    const valorAG = row[ColunaExcel.VALOR_AG] ? row[ColunaExcel.VALOR_AG].toString().trim() : "0";
-    const valorAD = row[ColunaExcel.VALOR_AD] ? row[ColunaExcel.VALOR_AD].toString().trim() : "0";
-    const valorAF = row[ColunaExcel.VALOR_AF] ? row[ColunaExcel.VALOR_AF].toString().trim() : "0";
-    const valorAE = row[ColunaExcel.VALOR_AE] ? row[ColunaExcel.VALOR_AE].toString().trim() : "0";
-    
+    const valorAC = row[ColunaExcel.VALOR_AC]
+      ? row[ColunaExcel.VALOR_AC].toString().trim()
+      : '0';
+    const valorAG = row[ColunaExcel.VALOR_AG]
+      ? row[ColunaExcel.VALOR_AG].toString().trim()
+      : '0';
+    const valorAD = row[ColunaExcel.VALOR_AD]
+      ? row[ColunaExcel.VALOR_AD].toString().trim()
+      : '0';
+    const valorAF = row[ColunaExcel.VALOR_AF]
+      ? row[ColunaExcel.VALOR_AF].toString().trim()
+      : '0';
+    const valorAE = row[ColunaExcel.VALOR_AE]
+      ? row[ColunaExcel.VALOR_AE].toString().trim()
+      : '0';
+
     // Converter e formatar os valores
     const desconto = parseFloat(valorAC).toFixed(2).replace('.', ',');
     const taxa = parseFloat(valorAG).toFixed(2).replace('.', ',');
-    const juros = (parseFloat(valorAD) + parseFloat(valorAF)).toFixed(2).replace('.', ',');
+    const juros = (parseFloat(valorAD) + parseFloat(valorAF))
+      .toFixed(2)
+      .replace('.', ',');
     const multa = parseFloat(valorAE).toFixed(2).replace('.', ',');
-    
-    if (codV === "13") {
+
+    if (codV === '13') {
       // Pagamento via caixa
-      results.push(`${localImportacao};${dataFormatada};912;13;${valor};${historicoCompleto}`);
-      
-      if (desconto !== "0,00") {
-        results.push(`${localImportacao};${dataFormatada};13;1111;${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`);
+      results.push(
+        `${localImportacao};${dataFormatada};912;13;${valor};${historicoCompleto}`,
+      );
+
+      if (desconto !== '0,00') {
+        results.push(
+          `${localImportacao};${dataFormatada};13;1111;${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`,
+        );
       }
-      
-      if (taxa !== "0,00") {
-        results.push(`${localImportacao};${dataFormatada};13;1111;${taxa};0;Taxa Administr. N:${histI} - ${histG}`);
+
+      if (taxa !== '0,00') {
+        results.push(
+          `${localImportacao};${dataFormatada};13;1111;${taxa};0;Taxa Administr. N:${histI} - ${histG}`,
+        );
       }
-      
-      if (juros !== "0,00") {
-        results.push(`${localImportacao};${dataFormatada};1381;13;${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`);
+
+      if (juros !== '0,00') {
+        results.push(
+          `${localImportacao};${dataFormatada};1381;13;${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`,
+        );
       }
-      
-      if (multa !== "0,00") {
-        results.push(`${localImportacao};${dataFormatada};1383;13;${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`);
+
+      if (multa !== '0,00') {
+        results.push(
+          `${localImportacao};${dataFormatada};1383;13;${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`,
+        );
       }
     } else {
       if (importLocation === TipoEmpresa.MATRIZ) {
@@ -621,132 +765,184 @@ class EnergiaDespesasProcessor {
           '83': '9083',
           '82': '9082',
           '180': '9180',
-          '161': '9161'
+          '161': '9161',
         };
         const tabela = bankMapping[codV] || '0000';
-        
-        results.push(`${localImportacao};${dataFormatada};912;${codV};${valor};${historicoCompleto}`);
-        
-        if (desconto !== "0,00") {
-          results.push(`${localImportacao};${dataFormatada};1111;${codV};${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`);
+
+        results.push(
+          `${localImportacao};${dataFormatada};912;${codV};${valor};${historicoCompleto}`,
+        );
+
+        if (desconto !== '0,00') {
+          results.push(
+            `${localImportacao};${dataFormatada};1111;${codV};${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
-        
-        if (taxa !== "0,00") {
-          results.push(`${localImportacao};${dataFormatada};1111;${codV};${taxa};0;Taxa Administr. N:${histI} - ${histG}`);
+
+        if (taxa !== '0,00') {
+          results.push(
+            `${localImportacao};${dataFormatada};1111;${codV};${taxa};0;Taxa Administr. N:${histI} - ${histG}`,
+          );
         }
-        
-        if (juros !== "0,00") {
-          results.push(`${localImportacao};${dataFormatada};1381;${codV};${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`);
+
+        if (juros !== '0,00') {
+          results.push(
+            `${localImportacao};${dataFormatada};1381;${codV};${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
-        
-        if (multa !== "0,00") {
-          results.push(`${localImportacao};${dataFormatada};1383;${codV};${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`);
+
+        if (multa !== '0,00') {
+          results.push(
+            `${localImportacao};${dataFormatada};1383;${codV};${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
-      } else if (importLocation === TipoEmpresa.FILIAL3 || importLocation === TipoEmpresa.FILIAL4 || importLocation === TipoEmpresa.FILIAL5 || importLocation === TipoEmpresa.FILIAL6) {
+      } else if (
+        importLocation === TipoEmpresa.FILIAL3 ||
+        importLocation === TipoEmpresa.FILIAL4 ||
+        importLocation === TipoEmpresa.FILIAL5 ||
+        importLocation === TipoEmpresa.FILIAL6
+      ) {
         // Pagamento via banco na filial
         // Lançamento na filial
-        results.push(`${localImportacao};${dataFormatada};912;1516;${valor};${historicoCompleto}`);
-        
+        results.push(
+          `${localImportacao};${dataFormatada};912;1516;${valor};${historicoCompleto}`,
+        );
+
         // Lançamento extra na matriz
         const historicoExtra = `270;${histI}-${histG} ${histAM}`;
-        results.push(`0001;${dataFormatada};1513;${codV};${valor};${historicoExtra}`);
-        
+        results.push(
+          `0001;${dataFormatada};1513;${codV};${valor};${historicoExtra}`,
+        );
+
         // Descontos
-        if (desconto !== "0,00") {
+        if (desconto !== '0,00') {
           // Na filial
-          results.push(`${localImportacao};${dataFormatada};1514;1111;${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `${localImportacao};${dataFormatada};1514;1111;${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`,
+          );
           // Na matriz
-          results.push(`0001;${dataFormatada};1515;${codV};${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `0001;${dataFormatada};1515;${codV};${desconto};0;Desconto s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
-        
+
         // Taxas
-        if (taxa !== "0,00") {
+        if (taxa !== '0,00') {
           // Na filial
-          results.push(`${localImportacao};${dataFormatada};1514;1111;${taxa};0;Taxa Administr. N:${histI} - ${histG}`);
+          results.push(
+            `${localImportacao};${dataFormatada};1514;1111;${taxa};0;Taxa Administr. N:${histI} - ${histG}`,
+          );
           // Na matriz
-          results.push(`0001;${dataFormatada};1515;${codV};${taxa};0;Taxa Administr. N:${histI} - ${histG}`);
+          results.push(
+            `0001;${dataFormatada};1515;${codV};${taxa};0;Taxa Administr. N:${histI} - ${histG}`,
+          );
         }
-        
+
         // Juros
-        if (juros !== "0,00") {
+        if (juros !== '0,00') {
           // Na filial
-          results.push(`${localImportacao};${dataFormatada};1381;1516;${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `${localImportacao};${dataFormatada};1381;1516;${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`,
+          );
           // Na matriz
-          results.push(`0001;${dataFormatada};1513;${codV};${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `0001;${dataFormatada};1513;${codV};${juros};0;Pagto Juros s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
-        
+
         // Multas
-        if (multa !== "0,00") {
+        if (multa !== '0,00') {
           // Na filial
-          results.push(`${localImportacao};${dataFormatada};1383;1516;${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `${localImportacao};${dataFormatada};1383;1516;${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`,
+          );
           // Na matriz
-          results.push(`0001;${dataFormatada};1513;${codV};${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`);
+          results.push(
+            `0001;${dataFormatada};1513;${codV};${multa};0;Pagto Multa s/ Duplic. N:${histI} - ${histG}`,
+          );
         }
       }
     }
-    
+
     return results;
   }
 
   /**
    * Processa despesas bancárias
    * @param {ExcelRow} row - Linha do Excel
-   * @returns {string[]} Array de linhas formatadas 
+   * @returns {string[]} Array de linhas formatadas
    */
   static processarDespesasBancarias(row: ExcelRow): string[] {
     const results: string[] = [];
     const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
-    if (![TipoEmpresa.MATRIZ, TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, , TipoEmpresa.FILIAL6].includes(importLocation)) return results;
+    if (
+      ![
+        TipoEmpresa.MATRIZ,
+        TipoEmpresa.FILIAL3,
+        TipoEmpresa.FILIAL4,
+        TipoEmpresa.FILIAL5,
+        ,
+        TipoEmpresa.FILIAL6,
+      ].includes(importLocation)
+    )
+      return results;
     const localImportacao = TELHAS_IMPORT_MAP[importLocation];
 
     const contaBancaria = row[ColunaExcel.CONTA_BANCARIA]?.toString().trim();
-    const dataFormatada = DataFormatter.formatDate(DataFormatter.parseISODateFromRow(row));
-    const valor = row[ColunaExcel.VALOR_S] ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2) : "0.00";
+    const dataFormatada = DataFormatter.formatDate(
+      DataFormatter.parseISODateFromRow(row),
+    );
+    const valor = row[ColunaExcel.VALOR_S]
+      ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2)
+      : '0.00';
     const natureza = row[ColunaExcel.NATUREZA]?.toString().trim();
 
-    let contaContabil = "";
-    let historicoFixo = "";
-    switch(natureza) {
-      case "150209":
-        contaContabil = "1397";
-        historicoFixo = "1277";
+    let contaContabil = '';
+    let historicoFixo = '';
+    switch (natureza) {
+      case '150209':
+        contaContabil = '1397';
+        historicoFixo = '1277';
         break;
-      case "150206":
-        contaContabil = "1378";
-        historicoFixo = "445";
+      case '150206':
+        contaContabil = '1378';
+        historicoFixo = '445';
         break;
-      case "140502":
-        contaContabil = "1363";
-        historicoFixo = "679";
+      case '140502':
+        contaContabil = '1363';
+        historicoFixo = '679';
         break;
-      case "150210":
-        contaContabil = "1393";
-        historicoFixo = "459";
+      case '150210':
+        contaContabil = '1393';
+        historicoFixo = '459';
         break;
-      case "150204":
-        contaContabil = "2381";
-        historicoFixo = "679";
+      case '150204':
+        contaContabil = '2381';
+        historicoFixo = '679';
         break;
-      case "150205":
-        contaContabil = "1397";
-        historicoFixo = "1277";
+      case '150205':
+        contaContabil = '1397';
+        historicoFixo = '1277';
         break;
       default:
         return results;
     }
-    
+
     let historico = historicoFixo;
-    if (historicoFixo === "679") {
-      const obs = row[ColunaExcel.HISTORICO_AM] ? DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_AM].toString()) : "";
-      if (obs) historico += " " + obs;
+    if (historicoFixo === '679') {
+      const obs = row[ColunaExcel.HISTORICO_AM]
+        ? DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_AM].toString())
+        : '';
+      if (obs) historico += ' ' + obs;
     }
-    
-    results.push(`${localImportacao};${dataFormatada};${contaContabil};${contaBancaria};${valor};${historico};`);
+
+    results.push(
+      `${localImportacao};${dataFormatada};${contaContabil};${contaBancaria};${valor};${historico};`,
+    );
 
     return results;
   }
 }
-
 
 /**
  * Classe responsável por processar dados fiscais
@@ -754,132 +950,188 @@ class EnergiaDespesasProcessor {
  */
 class FiscalProcessor {
   /**
-   * Processa dados fiscais da regra 326   filesToUpload 
+   * Processa dados fiscais da regra 326   filesToUpload
    * @param {ExcelRow[]} rows - Linhas do Excel
    * @param {Map<string, string>} mapeamentoDuplicatas - Mapeamento de duplicatas
    * @returns {Promise<{ linhasFiscais: string[]; duplicatasNaoEncontradas: any[] }>} Resultado do processamento
    */
   static async processarFiscal326(
     rows: ExcelRow[],
-    mapeamentoDuplicatas: Map<string, string>
+    mapeamentoDuplicatas: Map<string, string>,
   ): Promise<{ linhasFiscais: string[]; duplicatasNaoEncontradas: any[] }> {
     const linhasFiscais: string[] = [];
     const duplicatasNaoEncontradas: any[] = [];
-    
+
     for (const row of rows) {
       if (Number(row[ColunaExcel.RELATORIO]) !== 326) continue;
       const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
-      if (![TipoEmpresa.MATRIZ, TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, , TipoEmpresa.FILIAL6].includes(importLocation)) continue;
-      
+      if (
+        ![
+          TipoEmpresa.MATRIZ,
+          TipoEmpresa.FILIAL3,
+          TipoEmpresa.FILIAL4,
+          TipoEmpresa.FILIAL5,
+          ,
+          TipoEmpresa.FILIAL6,
+        ].includes(importLocation)
+      )
+        continue;
+
       const tipoTitulo = row[ColunaExcel.TIPO_TITULO]?.toString();
-      if ([TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(tipoTitulo as TipoTitulo)) continue;
-      
+      if (
+        [TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(
+          tipoTitulo as TipoTitulo,
+        )
+      )
+        continue;
+
       const tipoOperacao = row[ColunaExcel.TIPO_OPERACAO]?.toString();
-      if (['1660', '16', '17', '1610', '1602', '1152', '1604', '1601'].includes(tipoOperacao)) continue;
-      if (IGNORED_NATUREZAS.has(row[ColunaExcel.NATUREZA]?.toString())) continue;
-      
+      if (
+        ['1660', '16', '17', '1610', '1602', '1152', '1604', '1601'].includes(
+          tipoOperacao,
+        )
+      )
+        continue;
+      if (IGNORED_NATUREZAS.has(row[ColunaExcel.NATUREZA]?.toString()))
+        continue;
+
       const contaBancaria = row[ColunaExcel.CONTA_BANCARIA]?.toString();
       const dataISO = DataFormatter.parseISODateFromRow(row);
       const dataFormatada = DataFormatter.formatDate(dataISO);
-      const duplicataValue = row[ColunaExcel.DUPLICATA] ? row[ColunaExcel.DUPLICATA].toString().trim() : '';
-      
-      const notaFiscalKey = row[ColunaExcel.HISTORICO_I] ? row[ColunaExcel.HISTORICO_I].toString().trim() : 'N/D';
-      const dupInfo = JSON.parse(mapeamentoDuplicatas.get(notaFiscalKey) || '{}');
+      const duplicataValue = row[ColunaExcel.DUPLICATA]
+        ? row[ColunaExcel.DUPLICATA].toString().trim()
+        : '';
+
+      const notaFiscalKey = row[ColunaExcel.HISTORICO_I]
+        ? row[ColunaExcel.HISTORICO_I].toString().trim()
+        : 'N/D';
+      const dupInfo = JSON.parse(
+        mapeamentoDuplicatas.get(notaFiscalKey) || '{}',
+      );
       const chaveDuplicata = dupInfo.chaveDuplicata || '';
       const valorColunaF = dupInfo.valorColunaF || notaFiscalKey;
-      
+
       if (!chaveDuplicata) {
         duplicatasNaoEncontradas.push({
-          'Código': TELHAS_IMPORT_MAP[importLocation] || '',
+          Código: TELHAS_IMPORT_MAP[importLocation] || '',
           'Fornecedor/Cliente': row[ColunaExcel.HISTORICO_G]?.toString() || '',
-          'Duplicata': notaFiscalKey,
-          'Data': dataFormatada,
-          'Valor Bruto': row[ColunaExcel.VALOR_O] ? parseFloat(row[ColunaExcel.VALOR_O]).toFixed(2) : "0.00",
-          'Valor Líquido': row[ColunaExcel.VALOR_S] ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2) : "0.00",
-          'Banco': contaBancaria || '',
-          'Observação': 'Duplicata não consta no arquivo de duplicatas em aberto'
+          Duplicata: notaFiscalKey,
+          Data: dataFormatada,
+          'Valor Bruto': row[ColunaExcel.VALOR_O]
+            ? parseFloat(row[ColunaExcel.VALOR_O]).toFixed(2)
+            : '0.00',
+          'Valor Líquido': row[ColunaExcel.VALOR_S]
+            ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2)
+            : '0.00',
+          Banco: contaBancaria || '',
+          Observação: 'Duplicata não consta no arquivo de duplicatas em aberto',
         });
-        console.log(`🔴 Duplicata não encontrada no mapeamento: ${notaFiscalKey}`);
+        console.log(
+          `🔴 Duplicata não encontrada no mapeamento: ${notaFiscalKey}`,
+        );
         continue;
       }
-      
+
       // Extrair e calcular valores
-      const valorBase = row[ColunaExcel.VALOR_O] ? parseFloat(row[ColunaExcel.VALOR_O].toString()) : 0;
-      const valorAC = row[ColunaExcel.VALOR_AC] ? parseFloat(row[ColunaExcel.VALOR_AC].toString()) : 0;
-      const valorAD = row[ColunaExcel.VALOR_AD] ? parseFloat(row[ColunaExcel.VALOR_AD].toString()) : 0;
-      const valorAE = row[ColunaExcel.VALOR_AE] ? parseFloat(row[ColunaExcel.VALOR_AE].toString()) : 0;
-      const valorAF = row[ColunaExcel.VALOR_AF] ? parseFloat(row[ColunaExcel.VALOR_AF].toString()) : 0;
-      const valorAG = row[ColunaExcel.VALOR_AG] ? parseFloat(row[ColunaExcel.VALOR_AG].toString()) : 0;
-      
+      const valorBase = row[ColunaExcel.VALOR_O]
+        ? parseFloat(row[ColunaExcel.VALOR_O].toString())
+        : 0;
+      const valorAC = row[ColunaExcel.VALOR_AC]
+        ? parseFloat(row[ColunaExcel.VALOR_AC].toString())
+        : 0;
+      const valorAD = row[ColunaExcel.VALOR_AD]
+        ? parseFloat(row[ColunaExcel.VALOR_AD].toString())
+        : 0;
+      const valorAE = row[ColunaExcel.VALOR_AE]
+        ? parseFloat(row[ColunaExcel.VALOR_AE].toString())
+        : 0;
+      const valorAF = row[ColunaExcel.VALOR_AF]
+        ? parseFloat(row[ColunaExcel.VALOR_AF].toString())
+        : 0;
+      const valorAG = row[ColunaExcel.VALOR_AG]
+        ? parseFloat(row[ColunaExcel.VALOR_AG].toString())
+        : 0;
+
       // Formatar o valor base (coluna O)
       const valorFinal = valorBase - valorAC;
       const valorBaseFormatado = valorFinal.toFixed(2).replace('.', ',');
 
-      
       // Calcular valores adicionais
       const valorDesconto = valorAC.toFixed(2).replace('.', ',');
-      const valorJuros = (valorAD + valorAF + valorAG).toFixed(2).replace('.', ',');
+      const valorJuros = (valorAD + valorAF + valorAG)
+        .toFixed(2)
+        .replace('.', ',');
       const valorMulta = valorAE.toFixed(2).replace('.', ',');
-      
-      let tabelaFiscal = "";
+
+      let tabelaFiscal = '';
       if (contaBancaria === '13') {
         // Pagamentos via caixa sempre usam tabela 483
         tabelaFiscal = '483';
       } else if (importLocation === TipoEmpresa.MATRIZ) {
         // Pagamentos via banco na matriz usam mapeamento específico
         const bankMapping: { [key: string]: string } = {
-          '57': '8029', 
-          '60' : '8032',
-          '64' : '8033',
-          '67' : '8031',
-          '139' : '8039',
-          '174' : '9174',
-          '189' : '9189',
-          '198' : '9198' 
+          '57': '8029',
+          '60': '8032',
+          '64': '8033',
+          '67': '8031',
+          '139': '8039',
+          '174': '9174',
+          '189': '9189',
+          '198': '9198',
         };
         tabelaFiscal = bankMapping[contaBancaria] || '0000';
       } else {
         // Pagamentos via banco nas filiais usam tabela 9993
         tabelaFiscal = '8034';
       }
-      
-      const tipoEmpresaFiscal = 
-        importLocation === TipoEmpresa.MATRIZ ? '1' :
-        importLocation === TipoEmpresa.FILIAL3 ? '3' :
-        importLocation === TipoEmpresa.FILIAL4 ? '4' :
-        importLocation === TipoEmpresa.FILIAL5 ? '5' :
-        importLocation === TipoEmpresa.FILIAL6 ? '6' : '1';
-      
-        const linhaUnica = [
-          tipoEmpresaFiscal,
-          '1',
-          chaveDuplicata,
-          '001',
-          dataFormatada,
-          dataFormatada,
-          duplicataValue,
-          valorBaseFormatado,
-          valorJuros,
-          tabelaFiscal,
-          valorColunaF,
-          valorDesconto,
-          valorMulta
-        ].join(';');
-  
-        linhasFiscais.push(linhaUnica);
-      }
-    
+
+      const tipoEmpresaFiscal =
+        importLocation === TipoEmpresa.MATRIZ
+          ? '1'
+          : importLocation === TipoEmpresa.FILIAL3
+            ? '3'
+            : importLocation === TipoEmpresa.FILIAL4
+              ? '4'
+              : importLocation === TipoEmpresa.FILIAL5
+                ? '5'
+                : importLocation === TipoEmpresa.FILIAL6
+                  ? '6'
+                  : '1';
+
+      const linhaUnica = [
+        tipoEmpresaFiscal,
+        '1',
+        chaveDuplicata,
+        '001',
+        dataFormatada,
+        dataFormatada,
+        duplicataValue,
+        valorBaseFormatado,
+        valorJuros,
+        tabelaFiscal,
+        valorColunaF,
+        valorDesconto,
+        valorMulta,
+      ].join(';');
+
+      linhasFiscais.push(linhaUnica);
+    }
+
     linhasFiscais.sort((a, b) => {
       const fieldsA = a.split(';');
       const fieldsB = b.split(';');
       const [dA, mA, yA] = fieldsA[4].split('/');
       const [dB, mB, yB] = fieldsB[4].split('/');
-      return new Date(Number(`20${yA}`), Number(mA) - 1, Number(dA)).getTime() -
-             new Date(Number(`20${yB}`), Number(mB) - 1, Number(dB)).getTime();
+      return (
+        new Date(Number(`20${yA}`), Number(mA) - 1, Number(dA)).getTime() -
+        new Date(Number(`20${yB}`), Number(mB) - 1, Number(dB)).getTime()
+      );
     });
-    
+
     console.log(`Total de linhas fiscais processadas: ${linhasFiscais.length}`);
-    console.log(`Total de duplicatas não encontradas: ${duplicatasNaoEncontradas.length}`);
+    console.log(
+      `Total de duplicatas não encontradas: ${duplicatasNaoEncontradas.length}`,
+    );
     return { linhasFiscais, duplicatasNaoEncontradas };
   }
 }
@@ -903,23 +1155,30 @@ class Processador326 {
     duplicatasPath: string,
     outputContabilPath: string,
     outputFiscalPath: string,
-    outputDuplicatasPath: string
+    outputDuplicatasPath: string,
   ): Promise<void> {
     try {
       console.log('Iniciando processamento da Regra 326 (TELHAS)...');
-      const mapeamentoDuplicatas = await DuplicataProcessor.carregarMapeamentoDuplicatas(duplicatasPath);
+      const mapeamentoDuplicatas =
+        await DuplicataProcessor.carregarMapeamentoDuplicatas(duplicatasPath);
       const rows = await ExcelProcessor.readExcelFile(inputExcelPath);
-      
+
       const contabilOutput = this.processarContabil326(rows);
       this.exportToTxt(contabilOutput, outputContabilPath);
       console.log(`Arquivo Contábil gerado em: ${outputContabilPath}`);
-      
-      const { linhasFiscais, duplicatasNaoEncontradas } = await FiscalProcessor.processarFiscal326(rows, mapeamentoDuplicatas);
+
+      const { linhasFiscais, duplicatasNaoEncontradas } =
+        await FiscalProcessor.processarFiscal326(rows, mapeamentoDuplicatas);
       this.exportToTxt(linhasFiscais, outputFiscalPath);
       console.log(`Arquivo Fiscal gerado em: ${outputFiscalPath}`);
-      
-      await ExcelProcessor.exportToExcel(duplicatasNaoEncontradas, outputDuplicatasPath);
-      console.log(`Arquivo de Duplicatas não encontradas gerado em: ${outputDuplicatasPath}`);
+
+      await ExcelProcessor.exportToExcel(
+        duplicatasNaoEncontradas,
+        outputDuplicatasPath,
+      );
+      console.log(
+        `Arquivo de Duplicatas não encontradas gerado em: ${outputDuplicatasPath}`,
+      );
       console.log('Processamento concluído com sucesso!');
     } catch (error) {
       console.error('Erro durante o processamento da Regra 326:', error);
@@ -937,63 +1196,107 @@ class Processador326 {
     for (const row of rows) {
       if (Number(row[ColunaExcel.RELATORIO]) !== 326) continue;
       const importLocation = Number(row[ColunaExcel.IMPORT_LOCATION]);
-      if (![TipoEmpresa.MATRIZ, TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, , TipoEmpresa.FILIAL6].includes(importLocation)) continue;
-      
+      if (
+        ![
+          TipoEmpresa.MATRIZ,
+          TipoEmpresa.FILIAL3,
+          TipoEmpresa.FILIAL4,
+          TipoEmpresa.FILIAL5,
+          ,
+          TipoEmpresa.FILIAL6,
+        ].includes(importLocation)
+      )
+        continue;
+
       const tipoOperacao = row[ColunaExcel.TIPO_OPERACAO]?.toString();
       if (IGNORED_OPERACOES.has(tipoOperacao)) {
         console.log(`Linha ignorada - Tipo de Operação: ${tipoOperacao}`);
         continue;
       }
-      
+
       const natureza = row[ColunaExcel.NATUREZA]?.toString();
       if (IGNORED_NATUREZAS.has(natureza)) continue;
-      
+
       const tipoTitulo = row[ColunaExcel.TIPO_TITULO]?.toString();
-      if ([TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(tipoTitulo as TipoTitulo)) continue;
-      
+      if (
+        [TipoTitulo.IGNORAR_16, TipoTitulo.IGNORAR_17].includes(
+          tipoTitulo as TipoTitulo,
+        )
+      )
+        continue;
+
       if (tipoOperacao === TipoOperacao.ADIANTAMENTO_FORNECEDORES) {
-        output.push(...LancamentoProcessor.processarAdiantamentoFornecedores(row));
+        output.push(
+          ...LancamentoProcessor.processarAdiantamentoFornecedores(row),
+        );
       } else if (tipoOperacao === TipoOperacao.ENERGIA_ELETRICA) {
         output.push(...EnergiaDespesasProcessor.processarEnergia(row));
       } else if (tipoOperacao === TipoOperacao.DESPESAS_BANCARIAS) {
-        output.push(...EnergiaDespesasProcessor.processarDespesasBancarias(row));
-      } else if ([TipoOperacao.DESPESAS_DIVERSAS_1, TipoOperacao.DESPESAS_DIVERSAS_2].includes(tipoOperacao as TipoOperacao)) {
+        output.push(
+          ...EnergiaDespesasProcessor.processarDespesasBancarias(row),
+        );
+      } else if (
+        [
+          TipoOperacao.DESPESAS_DIVERSAS_1,
+          TipoOperacao.DESPESAS_DIVERSAS_2,
+        ].includes(tipoOperacao as TipoOperacao)
+      ) {
         output.push(...LancamentoProcessor.processarDespesasDiversas(row));
       } else {
         const contaBancaria = row[ColunaExcel.CONTA_BANCARIA]?.toString();
-      
-        const isFilial = [TipoEmpresa.FILIAL3, TipoEmpresa.FILIAL4, TipoEmpresa.FILIAL5, TipoEmpresa.FILIAL6].includes(importLocation);
+
+        const isFilial = [
+          TipoEmpresa.FILIAL3,
+          TipoEmpresa.FILIAL4,
+          TipoEmpresa.FILIAL5,
+          TipoEmpresa.FILIAL6,
+        ].includes(importLocation);
         const isBanco = contaBancaria !== '13';
-      
+
         if (isFilial && isBanco) {
           // Lançamento extra na matriz
           const dataISO = DataFormatter.parseISODateFromRow(row);
           const dataFormatada = DataFormatter.formatDate(dataISO);
-          const valor = row[ColunaExcel.VALOR_S] ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2) : '0.00';
-      
-          const histI = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_I]?.toString() || '');
-          const histG = DataFormatter.normalizeText(row[ColunaExcel.HISTORICO_G]?.toString() || '');
-      
+          const valor = row[ColunaExcel.VALOR_S]
+            ? parseFloat(row[ColunaExcel.VALOR_S]).toFixed(2)
+            : '0.00';
+
+          const histI = DataFormatter.normalizeText(
+            row[ColunaExcel.HISTORICO_I]?.toString() || '',
+          );
+          const histG = DataFormatter.normalizeText(
+            row[ColunaExcel.HISTORICO_G]?.toString() || '',
+          );
+
           const contaDebito = getExtraAccount(importLocation); // Conta contábil da filial
           const contaCredito = contaBancaria; // Banco
           const historico = `270;${histI} - ${histG}`;
-      
-          output.push(`0001;${dataFormatada};${contaDebito};${contaCredito};${valor};${historico}`);
+
+          output.push(
+            `0001;${dataFormatada};${contaDebito};${contaCredito};${valor};${historico}`,
+          );
         }
       }
-      
     }
-    
+
     output.sort((a, b) => {
       const [, dateA] = a.split(';');
       const [, dateB] = b.split(';');
       const [dA, mA, yA] = dateA.split('/');
       const [dB, mB, yB] = dateB.split('/');
-      const timeA = new Date(Number(`20${yA}`), Number(mA) - 1, Number(dA)).getTime();
-      const timeB = new Date(Number(`20${yB}`), Number(mB) - 1, Number(dB)).getTime();
+      const timeA = new Date(
+        Number(`20${yA}`),
+        Number(mA) - 1,
+        Number(dA),
+      ).getTime();
+      const timeB = new Date(
+        Number(`20${yB}`),
+        Number(mB) - 1,
+        Number(dB),
+      ).getTime();
       return timeA - timeB;
     });
-    
+
     console.log(`Total de linhas contábeis processadas: ${output.length}`);
     return output;
   }
@@ -1005,12 +1308,15 @@ class Processador326 {
    * @returns {void}
    */
   private static exportToTxt(data: string[], outputPath: string): void {
-    const content = data.length > 0
-      ? data.join('\r\n') + '\r\n'
-      : 'Arquivo gerado automaticamente, mas sem dados válidos.\r\n';
-      
+    const content =
+      data.length > 0
+        ? data.join('\r\n') + '\r\n'
+        : 'Arquivo gerado automaticamente, mas sem dados válidos.\r\n';
+
     fs.writeFileSync(outputPath, content, { encoding: 'utf8' });
-    console.log(`📝 Arquivo 289 exportado: ${outputPath} (${data.length} linhas)`);
+    console.log(
+      `📝 Arquivo 289 exportado: ${outputPath} (${data.length} linhas)`,
+    );
   }
 }
 
@@ -1018,4 +1324,3 @@ class Processador326 {
    EXPORTAÇÃO
    =================================================== */
 export { Processador326 };
-

@@ -9,7 +9,7 @@ const FILIAL_CODE_6 = '0006';
 
 function normalizeText(str: string): string {
   return str
-    .normalize("NFD")
+    .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
 }
@@ -19,7 +19,10 @@ export async function readExcelFile(filePath: string): Promise<any[]> {
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.getWorksheet(1);
 
-  console.log("Planilhas disponíveis:", workbook.worksheets.map(sheet => sheet.name));
+  console.log(
+    'Planilhas disponíveis:',
+    workbook.worksheets.map((sheet) => sheet.name),
+  );
   const rows = [];
 
   worksheet.eachRow((row, rowNumber) => {
@@ -39,38 +42,63 @@ export function processarRegra336(rows: any[]): string[] {
     const codigoRelatorio = Number(row[1]);
     if (codigoRelatorio !== 336) return;
 
-    const filial = row[2] ? row[2].toString().trim() : "";
-    if (!["5", "7", "10", "11", "12"].includes(filial)) return;
+    const filial = row[2] ? row[2].toString().trim() : '';
+    if (!['5', '7', '10', '11', '12'].includes(filial)) return;
 
-    const local = filial === "5" ? MATRIZ_CODE :
-                  filial === "7" ? FILIAL_CODE_3 :
-                  filial === "10" ? FILIAL_CODE_4 :
-                  filial === "11" ? FILIAL_CODE_5 :
-                  FILIAL_CODE_6;
+    const local =
+      filial === '5'
+        ? MATRIZ_CODE
+        : filial === '7'
+          ? FILIAL_CODE_3
+          : filial === '10'
+            ? FILIAL_CODE_4
+            : filial === '11'
+              ? FILIAL_CODE_5
+              : FILIAL_CODE_6;
 
-    const cnpjCliente = row[8] ? normalizeText(row[8].toString()) : "CNPJ_CLIENTE";
-    const historicoG = row[7] ? normalizeText(row[7].toString().trim()) : "HIST_G";
-    const historicoI = row[9] ? normalizeText(row[9].toString().trim()) : "HIST_I";
+    const cnpjCliente = row[8]
+      ? normalizeText(row[8].toString())
+      : 'CNPJ_CLIENTE';
+    const historicoG = row[7]
+      ? normalizeText(row[7].toString().trim())
+      : 'HIST_G';
+    const historicoI = row[9]
+      ? normalizeText(row[9].toString().trim())
+      : 'HIST_I';
     const historicoBase = `${historicoI} - ${historicoG}`.trim();
 
-    const dataBaixa = row[18] ? row[18].toString().split(" ")[0] : "DATA_INVALIDA";
+    const dataBaixa = row[18]
+      ? row[18].toString().split(' ')[0]
+      : 'DATA_INVALIDA';
 
-    const valorDesdobramento = row[15] ? parseFloat(row[15]).toFixed(2) : "0.00";
-    const jurosRecebidos = (parseFloat(row[30] || 0) + parseFloat(row[32] || 0)).toFixed(2);
+    const valorDesdobramento = row[15]
+      ? parseFloat(row[15]).toFixed(2)
+      : '0.00';
+    const jurosRecebidos = (
+      parseFloat(row[30] || 0) + parseFloat(row[32] || 0)
+    ).toFixed(2);
     const desconto = parseFloat(row[29] || 0).toFixed(2);
     const multa = parseFloat(row[31] || 0).toFixed(2);
 
     if (parseFloat(valorDesdobramento) > 0) {
-      output.push(`${local};${dataBaixa};893;${cnpjCliente};${valorDesdobramento};2081;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;${cnpjCliente};${valorDesdobramento};2081;${historicoBase}`,
+      );
     }
     if (parseFloat(jurosRecebidos) > 0) {
-      output.push(`${local};${dataBaixa};893;1120;${jurosRecebidos};1202;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;1120;${jurosRecebidos};1202;${historicoBase}`,
+      );
     }
     if (parseFloat(desconto) > 0) {
-      output.push(`${local};${dataBaixa};1377;893;${desconto};2082;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};1377;893;${desconto};2082;${historicoBase}`,
+      );
     }
     if (parseFloat(multa) > 0) {
-      output.push(`${local};${dataBaixa};893;1112;${multa};1997;${historicoBase}`);
+      output.push(
+        `${local};${dataBaixa};893;1112;${multa};1997;${historicoBase}`,
+      );
     }
   });
 
@@ -80,7 +108,7 @@ export function processarRegra336(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
@@ -89,7 +117,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   console.log(`Arquivo salvo com ${data.length} linhas em: ${outputPath}`);
 }
 
-export async function processarArquivo336(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo336(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Iniciando processamento...');
     const rows = await readExcelFile(inputExcelPath);

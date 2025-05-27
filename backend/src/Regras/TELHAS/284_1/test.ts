@@ -1,10 +1,12 @@
-import { processarArquivo284 } from "./ProcessarArquivo284";
+import { processarArquivo284 } from './ProcessarArquivo284';
 
 const processarArquivo = processarArquivo284;
 
-const inputExcelPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\TELHAS\\uploads\\284.xlsx';
+const inputExcelPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\TELHAS\\uploads\\284.xlsx';
 
-const outputTxtPath = 'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\TELHAS\\saida\\saida284.txt';
+const outputTxtPath =
+  'C:\\Users\\Administrador\\Desktop\\DEPLOY\\backend\\src\\uploads\\TELHAS\\saida\\saida284.txt';
 
 (async () => {
   try {

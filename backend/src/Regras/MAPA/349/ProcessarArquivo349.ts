@@ -3,7 +3,10 @@ import * as fs from 'fs';
 
 function normalizeText(str: string): string {
   if (!str || typeof str !== 'string') return '';
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, '').trim();
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
 }
 
 export function transformarRegra349(rows: any[]): string[] {
@@ -14,31 +17,39 @@ export function transformarRegra349(rows: any[]): string[] {
 
     const codigoRelatorio = Number(row[1]);
     if (codigoRelatorio !== 349) {
-      console.log(`Linha ${index + 1} ignorada - Código Relatório: ${codigoRelatorio}`);
+      console.log(
+        `Linha ${index + 1} ignorada - Código Relatório: ${codigoRelatorio}`,
+      );
       return;
     }
 
     const filial = row[2]?.toString().trim();
-    if (!["6", "9", "506"].includes(filial)) {
+    if (!['6', '9', '506'].includes(filial)) {
       console.log(`Linha ${index + 1} ignorada - Filial inválida: ${filial}`);
       return;
     }
 
-    const nomeCliente = row[7] ? normalizeText(row[7].toString().trim()) : "CLIENTE_DESCONHECIDO";
-    const dataBaixa = row[18] ? row[18].toString().split(" ")[0] : "DATA_INVALIDA";
-    const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : "0.00";
+    const nomeCliente = row[7]
+      ? normalizeText(row[7].toString().trim())
+      : 'CLIENTE_DESCONHECIDO';
+    const dataBaixa = row[18]
+      ? row[18].toString().split(' ')[0]
+      : 'DATA_INVALIDA';
+    const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : '0.00';
     if (parseFloat(valorBaixa) <= 0) {
-      console.log(`Linha ${index + 1} ignorada - Valor da baixa <= 0: ${valorBaixa}`);
+      console.log(
+        `Linha ${index + 1} ignorada - Valor da baixa <= 0: ${valorBaixa}`,
+      );
       return;
     }
 
     const banco = row[22]?.toString().trim() || '';
     const historico = `1193;${nomeCliente}`;
 
-    if (filial === "6" || filial === "506") {
+    if (filial === '6' || filial === '506') {
       // Lançamento dentro da Matriz
       output.push(`0001;${dataBaixa};${banco};893;${valorBaixa};${historico}`);
-    } else if (filial === "9") {
+    } else if (filial === '9') {
       // Lançamento na Filial
       output.push(`0002;${dataBaixa};1514;893;${valorBaixa};${historico}`);
 
@@ -53,7 +64,7 @@ export function transformarRegra349(rows: any[]): string[] {
 
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
@@ -79,7 +90,10 @@ export async function readExcelFile(filePath: string): Promise<any[]> {
   return rows;
 }
 
-export async function processarArquivo349(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo349(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('🚀 Iniciando processamento da Regra 349...');
     const rows = await readExcelFile(inputExcelPath);

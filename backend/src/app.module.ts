@@ -7,7 +7,6 @@ import { EmpresaModule } from './empresas/empresa.module';
 import { ProcessModule } from './process/process.module';
 import { SupabaseProvider } from './supabase/supabase.client';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Res, HttpStatus, UnauthorizedException, HttpException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  HttpStatus,
+  UnauthorizedException,
+  HttpException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -18,7 +26,9 @@ export class AuthController {
       const { accessToken } = await this.authService.login(loginDto);
       return response.status(HttpStatus.OK).json({ token: accessToken });
     } catch (error) {
-      return response.status(HttpStatus.UNAUTHORIZED).json({ error: error.message });
+      return response
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ error: error.message });
     }
   }
 
@@ -28,7 +38,9 @@ export class AuthController {
       const newUser = await this.authService.register(registerDto);
       return response.status(HttpStatus.CREATED).send(newUser);
     } catch (error) {
-      return response.status(HttpStatus.BAD_REQUEST).send({ error: error.message });
+      return response
+        .status(HttpStatus.BAD_REQUEST)
+        .send({ error: error.message });
     }
   }
 

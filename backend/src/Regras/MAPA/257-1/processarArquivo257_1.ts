@@ -5,12 +5,11 @@ import * as fs from 'fs';
 const LOCAL_MATRIZ = '0001';
 const LOCAL_FILIAL_2 = '0002';
 
-
 // Contas contábeis fixas
-const CONTA_CHEQUES_RECEBER       = '1483';
-const CONTA_C_C_MATRIZ            = '1514';
-const CONTA_ADIANTAMENTO_CLIENTE  = '893';
-const CONTA_BANCO_FILIAL_2        = '1515';
+const CONTA_CHEQUES_RECEBER = '1483';
+const CONTA_C_C_MATRIZ = '1514';
+const CONTA_ADIANTAMENTO_CLIENTE = '893';
+const CONTA_BANCO_FILIAL_2 = '1515';
 
 // Tipo de relatório que será processado
 const TIPO_RELATORIO_PROCESSAR = '257/1';
@@ -19,7 +18,7 @@ const TIPO_RELATORIO_PROCESSAR = '257/1';
  * Remove acentos de uma string utilizando normalização Unicode.
  */
 function normalizeText(str: string): string {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, '');
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 /**
@@ -51,7 +50,9 @@ function processRow(row: any[], rowIndex: number): string[] {
   // Extração e formatação dos dados da linha
   const tipoRelatorio = row[1]?.toString().trim();
   if (tipoRelatorio !== TIPO_RELATORIO_PROCESSAR) {
-    console.log(`Linha ${rowIndex + 1} ignorada: não corresponde ao tipo ${TIPO_RELATORIO_PROCESSAR}.`);
+    console.log(
+      `Linha ${rowIndex + 1} ignorada: não corresponde ao tipo ${TIPO_RELATORIO_PROCESSAR}.`,
+    );
     return outputLines;
   }
 
@@ -72,23 +73,27 @@ function processRow(row: any[], rowIndex: number): string[] {
 
     case 9: // Filial 2 – PRUDENTE
       // Linha extra para o lançamento na filial
-      outputLines.push(`${LOCAL_FILIAL_2};${dataBaixa};${CONTA_C_C_MATRIZ};${CONTA_CHEQUES_RECEBER};${valorBaixa};${historico}`);
+      outputLines.push(
+        `${LOCAL_FILIAL_2};${dataBaixa};${CONTA_C_C_MATRIZ};${CONTA_CHEQUES_RECEBER};${valorBaixa};${historico}`,
+      );
       linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${CONTA_BANCO_FILIAL_2};${valorBaixa};${historico}`;
       break;
-
 
     case 506: // Empresa 513 (lançamento dentro da matriz)
       linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${CONTA_ADIANTAMENTO_CLIENTE};${valorBaixa};${historico}`;
       break;
 
     case 509: // Empresa 514 (Filial 2)
-      outputLines.push(`${LOCAL_FILIAL_2};${dataBaixa};${CONTA_C_C_MATRIZ};${CONTA_ADIANTAMENTO_CLIENTE};${valorBaixa};${historico}`);
+      outputLines.push(
+        `${LOCAL_FILIAL_2};${dataBaixa};${CONTA_C_C_MATRIZ};${CONTA_ADIANTAMENTO_CLIENTE};${valorBaixa};${historico}`,
+      );
       linhaPrincipal = `${LOCAL_MATRIZ};${dataBaixa};${banco};${CONTA_BANCO_FILIAL_2};${valorBaixa};${historico}`;
       break;
 
-
     default:
-      console.log(`Linha ${rowIndex + 1} ignorada: Empresa ${empresa} não reconhecida.`);
+      console.log(
+        `Linha ${rowIndex + 1} ignorada: Empresa ${empresa} não reconhecida.`,
+      );
       return outputLines;
   }
 
@@ -112,7 +117,9 @@ export function transformData(rows: any[]): string[] {
     output.push(...linhasProcessadas);
   });
 
-  console.log(`Transformação concluída. Total de linhas processadas: ${output.length}`);
+  console.log(
+    `Transformação concluída. Total de linhas processadas: ${output.length}`,
+  );
   return output;
 }
 
@@ -129,7 +136,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
 /**
  * Função principal que orquestra a leitura, transformação e exportação dos dados.
  */
-export async function processarArquivos257_1(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivos257_1(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Lendo o arquivo Excel...');
     const rows = await readExcelFile(inputExcelPath);

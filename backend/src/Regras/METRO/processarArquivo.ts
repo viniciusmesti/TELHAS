@@ -2,15 +2,14 @@ import * as xlsx from 'xlsx';
 import * as fs from 'fs';
 
 export function processarSalarioExcel(path: string) {
-
   const workbook = xlsx.readFile(path);
   const sheetName = workbook.SheetNames[0];
-  
+
   const sheet = workbook.Sheets[sheetName];
 
-  const data = xlsx.utils.sheet_to_json<any>(sheet, { raw: true, defval: "" });
+  const data = xlsx.utils.sheet_to_json<any>(sheet, { raw: true, defval: '' });
 
-  console.log("🔍 Primeiras linhas do arquivo:");
+  console.log('🔍 Primeiras linhas do arquivo:');
   console.log(data.slice(0, 10));
 
   const contabeis: string[] = [];
@@ -25,13 +24,17 @@ export function processarSalarioExcel(path: string) {
     const bancoPossivel = obterTextoBanco(row);
 
     if (bancoPossivel) {
-      console.log(`➡️ Possível banco detectado na linha ${i + 1}: "${bancoPossivel}"`);
+      console.log(
+        `➡️ Possível banco detectado na linha ${i + 1}: "${bancoPossivel}"`,
+      );
       const bancoDetectado = detectarBanco(bancoPossivel);
       if (bancoDetectado) {
         bancoAtual = bancoPossivel;
         codigoBanco = bancoDetectado;
-        console.log(`✅ Banco detectado: "${bancoAtual}" → Código: ${codigoBanco}`);
-        continue;  // linha de cabeçalho, passa para próxima
+        console.log(
+          `✅ Banco detectado: "${bancoAtual}" → Código: ${codigoBanco}`,
+        );
+        continue; // linha de cabeçalho, passa para próxima
       }
     }
 
@@ -46,7 +49,9 @@ export function processarSalarioExcel(path: string) {
 
     // ➡️ Regra SAL
     if (documento.toUpperCase().includes('SAL')) {
-      console.log(`➡️ Processando SAL na linha ${i + 1}: Documento: "${documento}", Código Banco atual: "${codigoBanco}"`);
+      console.log(
+        `➡️ Processando SAL na linha ${i + 1}: Documento: "${documento}", Código Banco atual: "${codigoBanco}"`,
+      );
 
       const historicoSAL = `${docNum} ${credor}`;
       const linhaContabil = `0001;${dataPagto};126;${codigoBanco};${valorPago.toFixed(2)};882;"${historicoSAL}"`;
@@ -60,10 +65,12 @@ export function processarSalarioExcel(path: string) {
 
     // ➡️ Regra PLB.PLB
     if (documento.toUpperCase().includes('PLB.PLB')) {
-      console.log(`➡️ Processando PLB.PLB na linha ${i + 1}: Documento: "${documento}", Código Banco atual: "${codigoBanco}"`);
-    
+      console.log(
+        `➡️ Processando PLB.PLB na linha ${i + 1}: Documento: "${documento}", Código Banco atual: "${codigoBanco}"`,
+      );
+
       const historicoPLB = `${documento} ${credor}`;
-    
+
       const linhaContabil = `0001;${dataPagto};127;${codigoBanco};${valorPago.toFixed(2)};882;"${historicoPLB}"`;
       contabeis.push(linhaContabil);
       console.log(`✅ Linha CONTÁBIL PLB: ${linhaContabil}`);

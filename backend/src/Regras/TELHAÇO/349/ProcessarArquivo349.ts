@@ -5,7 +5,7 @@ import * as fs from 'fs';
 function normalizeText(str: string): string {
   if (!str || typeof str !== 'string') return '';
   return str
-    .normalize("NFD")
+    .normalize('NFD')
     .replace(/[^\p{Letter}\p{Number}\s]/gu, '')
     .trim();
 }
@@ -37,20 +37,26 @@ export function processarRegra349(rows: any[]): string[] {
 
     const codigoRelatorio = Number(row[1]);
     if (codigoRelatorio !== 349) {
-      console.log(`Linha ${index + 1} ignorada - Código Relatório: ${codigoRelatorio}`);
+      console.log(
+        `Linha ${index + 1} ignorada - Código Relatório: ${codigoRelatorio}`,
+      );
       return;
     }
 
-    const filial = row[2] ? row[2].toString().trim() : "";
+    const filial = row[2] ? row[2].toString().trim() : '';
     if (!['1', '2', '3', '4'].includes(filial)) {
       console.log(`Linha ${index + 1} ignorada - Filial inválida: ${filial}`);
       return;
     }
 
-    const banco = row[22] ? row[22].toString().trim() : "";
-    const nomeCliente = row[7] ? normalizeText(row[7].toString().trim()) : "CLIENTE_DESCONHECIDO";
-    const dataBaixa = row[18] ? row[18].toString().split(" ")[0] : "DATA_INVALIDA";
-    const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : "0.00";
+    const banco = row[22] ? row[22].toString().trim() : '';
+    const nomeCliente = row[7]
+      ? normalizeText(row[7].toString().trim())
+      : 'CLIENTE_DESCONHECIDO';
+    const dataBaixa = row[18]
+      ? row[18].toString().split(' ')[0]
+      : 'DATA_INVALIDA';
+    const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : '0.00';
     if (parseFloat(valorBaixa) <= 0) return;
 
     const historico = `1193;${nomeCliente}`;
@@ -77,8 +83,12 @@ export function processarRegra349(rows: any[]): string[] {
           break;
       }
 
-      output.push(`${localFilial};${dataBaixa};706;893;${valorBaixa};${historico}`); // Lançamento na filial
-      output.push(`0001;${dataBaixa};${banco};${contaCorrenteFilial};${valorBaixa};${historico}`); // Extra na matriz
+      output.push(
+        `${localFilial};${dataBaixa};706;893;${valorBaixa};${historico}`,
+      ); // Lançamento na filial
+      output.push(
+        `0001;${dataBaixa};${banco};${contaCorrenteFilial};${valorBaixa};${historico}`,
+      ); // Extra na matriz
     }
   });
 
@@ -86,11 +96,10 @@ export function processarRegra349(rows: any[]): string[] {
   return output;
 }
 
-
 // Função para exportar os dados para um arquivo TXT
 export function exportToTxt(data: string[], outputPath: string): void {
   if (data.length === 0) {
-    console.log("Nenhuma linha foi processada. O arquivo TXT não será gerado.");
+    console.log('Nenhuma linha foi processada. O arquivo TXT não será gerado.');
     return;
   }
   data.push('');
@@ -100,7 +109,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
 }
 
 // Função principal para processar o arquivo
-export async function processarArquivo349(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo349(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('🚀 Iniciando processamento...');
     const rows = await readExcelFile(inputExcelPath);

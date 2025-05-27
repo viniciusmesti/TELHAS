@@ -4,10 +4,28 @@ import { processarArquivo255 } from './ProcessarArquivo255';
 async function testarProcessamento() {
   try {
     console.log('Iniciando o teste da Regra 255 para a empresa TELHAS...');
-    
+
     // Ajuste os caminhos conforme sua estrutura de pastas:
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'uploads', '255.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'saida', 'saida255.txt');
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'uploads',
+      '255.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'saida',
+      'saida255.txt',
+    );
 
     // Certifique-se de que o diretório de saída existe:
     const fs = require('fs');
@@ -17,7 +35,10 @@ async function testarProcessamento() {
     }
 
     await processarArquivo255(inputExcelPath, outputTxtPath);
-    console.log('Teste da Regra 255 concluído com sucesso! Verifique o arquivo de saída:', outputTxtPath);
+    console.log(
+      'Teste da Regra 255 concluído com sucesso! Verifique o arquivo de saída:',
+      outputTxtPath,
+    );
   } catch (error) {
     console.error('Erro no teste da Regra 255:', error);
   }

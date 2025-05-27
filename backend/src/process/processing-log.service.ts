@@ -5,7 +5,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ProcessingLogService {
   constructor(private prisma: PrismaService) {}
 
-  async createLog(fileUrl: string, outputFileName: string, status: string, processId: string, message?: string) {
+  async createLog(
+    fileUrl: string,
+    outputFileName: string,
+    status: string,
+    processId: string,
+    message?: string,
+  ) {
     return await this.prisma.processingLog.create({
       data: {
         fileUrl,

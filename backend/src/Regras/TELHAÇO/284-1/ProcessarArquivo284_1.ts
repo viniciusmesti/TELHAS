@@ -1,7 +1,7 @@
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs';
 
-const MATRIZ_CODE   = '0001';
+const MATRIZ_CODE = '0001';
 const FILIAL_CODE_3 = '0002';
 const FILIAL_CODE_2 = '0003';
 const FILIAL_CODE_4 = '0004';
@@ -16,11 +16,11 @@ const CONTA_FILIAL: Record<string, string> = {
 };
 
 const MACHINE_MAP: Record<string, string> = {
-  'getnet': '551',
-  'cielo': '538',
-  'stone': '545',
-  'bndes': '558',
-  'rede': '2060',
+  getnet: '551',
+  cielo: '538',
+  stone: '545',
+  bndes: '558',
+  rede: '2060',
 };
 
 function normalizeText(str: string): string {
@@ -48,7 +48,9 @@ export function transformData(rows: any[]): string[] {
 
     const tipoRelatorio = row[1]?.toString().trim();
     if (tipoRelatorio !== '284/1') {
-      console.log(`Linha ${index + 1} ignorada: tipo de relatório diferente de 284/1.`);
+      console.log(
+        `Linha ${index + 1} ignorada: tipo de relatório diferente de 284/1.`,
+      );
       return;
     }
 
@@ -58,46 +60,70 @@ export function transformData(rows: any[]): string[] {
       return;
     }
 
-    const local = filial === '1' ? MATRIZ_CODE
-                : filial === '2' ? FILIAL_CODE_3
-                : filial === '3' ? FILIAL_CODE_2
-                : filial === '4' ? FILIAL_CODE_4
-                : '';
+    const local =
+      filial === '1'
+        ? MATRIZ_CODE
+        : filial === '2'
+          ? FILIAL_CODE_3
+          : filial === '3'
+            ? FILIAL_CODE_2
+            : filial === '4'
+              ? FILIAL_CODE_4
+              : '';
 
     const maquina = row[12]?.toString().trim().toLowerCase() || '';
-    const contaMaquina = MACHINE_MAP[Object.keys(MACHINE_MAP).find(key => maquina.includes(key)) || ''] || maquina;
+    const contaMaquina =
+      MACHINE_MAP[
+        Object.keys(MACHINE_MAP).find((key) => maquina.includes(key)) || ''
+      ] || maquina;
 
     if (!contaMaquina) {
-      console.log(`Linha ${index + 1} ignorada: máquina inválida (${maquina}).`);
+      console.log(
+        `Linha ${index + 1} ignorada: máquina inválida (${maquina}).`,
+      );
       return;
     }
 
     const dataBaixa = row[18]?.toString().split(' ')[0] || '';
     const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : '0.00';
-    const taxaAdministrativa = row[33] ? parseFloat(row[33]).toFixed(2) : '0.00';
+    const taxaAdministrativa = row[33]
+      ? parseFloat(row[33]).toFixed(2)
+      : '0.00';
     const historicoG = row[7] ? normalizeText(row[7].toString().trim()) : '';
     const historicoI = row[9] ? normalizeText(row[9].toString().trim()) : '';
     const banco = row[22]?.toString().trim() || '';
 
     const historicoBase = `${normalizeText(row[12]?.toString().trim() || '')} - ${historicoG} - ${historicoI}`;
 
-        // MATRIZ
-        if (filial === '1') {
-          output.push(`${local};${dataBaixa};${banco};${contaMaquina};${valorBaixa};1189;${historicoBase}`);
-          output.push(`${local};${dataBaixa};${CONTA_TAXA_ADMINISTRATIVA};${contaMaquina};${taxaAdministrativa};1360;${historicoBase}`);
-        }
+    // MATRIZ
+    if (filial === '1') {
+      output.push(
+        `${local};${dataBaixa};${banco};${contaMaquina};${valorBaixa};1189;${historicoBase}`,
+      );
+      output.push(
+        `${local};${dataBaixa};${CONTA_TAXA_ADMINISTRATIVA};${contaMaquina};${taxaAdministrativa};1360;${historicoBase}`,
+      );
+    }
 
-        // FILIAIS
-        if (['2', '3', '4'].includes(filial)) {
-          output.push(`${local};${dataBaixa};${CONTA_CC_FILIAL_FIXA};${contaMaquina};${valorBaixa};1189;${historicoBase}`);
-          output.push(`${local};${dataBaixa};${CONTA_TAXA_ADMINISTRATIVA};${contaMaquina};${taxaAdministrativa};1360;${historicoBase}`);
+    // FILIAIS
+    if (['2', '3', '4'].includes(filial)) {
+      output.push(
+        `${local};${dataBaixa};${CONTA_CC_FILIAL_FIXA};${contaMaquina};${valorBaixa};1189;${historicoBase}`,
+      );
+      output.push(
+        `${local};${dataBaixa};${CONTA_TAXA_ADMINISTRATIVA};${contaMaquina};${taxaAdministrativa};1360;${historicoBase}`,
+      );
 
-          const contaFilial = CONTA_FILIAL[filial];
-          output.push(`${MATRIZ_CODE};${dataBaixa};${banco};${contaFilial};${valorBaixa};1189;${historicoBase}`);
-        }
+      const contaFilial = CONTA_FILIAL[filial];
+      output.push(
+        `${MATRIZ_CODE};${dataBaixa};${banco};${contaFilial};${valorBaixa};1189;${historicoBase}`,
+      );
+    }
   });
 
-  console.log(`Transformação completa. Total de linhas geradas: ${output.length}`);
+  console.log(
+    `Transformação completa. Total de linhas geradas: ${output.length}`,
+  );
   return output;
 }
 
@@ -106,7 +132,10 @@ export function exportToTxt(data: string[], outputPath: string): void {
   fs.writeFileSync(outputPath, data.join('\r\n'), { encoding: 'utf8' });
 }
 
-export async function processarArquivo284(inputExcelPath: string, outputTxtPath: string): Promise<void> {
+export async function processarArquivo284(
+  inputExcelPath: string,
+  outputTxtPath: string,
+): Promise<void> {
   try {
     console.log('Lendo o arquivo Excel...');
     const rows = await readExcelFile(inputExcelPath);

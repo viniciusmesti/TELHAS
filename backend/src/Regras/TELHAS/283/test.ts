@@ -3,11 +3,31 @@ import { processarArquivo283 } from './ProcessarArquivo283';
 
 async function testarProcessamento() {
   try {
-    console.log('Iniciando o teste da Regra 283 para TELHAS CASCAVEL (Vendas em Cartão)...');
+    console.log(
+      'Iniciando o teste da Regra 283 para TELHAS CASCAVEL (Vendas em Cartão)...',
+    );
 
     // Ajuste os caminhos conforme sua estrutura de pastas:
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'uploads', '283.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'TELHAS', 'saida', 'saida283.txt');
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'uploads',
+      '283.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'TELHAS',
+      'saida',
+      'saida283.txt',
+    );
 
     // Certifique-se de que o diretório de saída existe:
     const fs = require('fs');
@@ -17,7 +37,10 @@ async function testarProcessamento() {
     }
 
     await processarArquivo283(inputExcelPath, outputTxtPath);
-    console.log('Teste da Regra 283 concluído com sucesso! Verifique o arquivo de saída:', outputTxtPath);
+    console.log(
+      'Teste da Regra 283 concluído com sucesso! Verifique o arquivo de saída:',
+      outputTxtPath,
+    );
   } catch (error) {
     console.error('Erro no teste da Regra 283:', error);
   }

@@ -5,8 +5,26 @@ import * as fs from 'fs';
 async function test() {
   try {
     console.log('Iniciando o teste da Regra 337...');
-    const inputExcelPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'uploads', '337.xlsx');
-    const outputTxtPath = path.join(__dirname, '..', '..', '..', 'uploads', 'MAPA', 'saida', 'saida337.txt');
+    const inputExcelPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'uploads',
+      '337.xlsx',
+    );
+    const outputTxtPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'uploads',
+      'MAPA',
+      'saida',
+      'saida337.txt',
+    );
 
     // Certifica-se de que o diretório de saída existe:
     const outputDir = path.dirname(outputTxtPath);
