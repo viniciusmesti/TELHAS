@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readExcelFile } from '../utils'; 
 import { transformarRegra255 } from '../Regras/MAPA/255/transformarRegra255';
 import { exportToTxt } from '../Regras/MAPA/255/processarArquivo255';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { ProcessingLogService } from './processing-log.service';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Controller, Post, UploadedFile, UseInterceptors, Res, Body, Get, Param, UploadedFiles } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { SupabaseService } from '../supabase/supabase.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { ProcessingLogService } from './processing-log.service';
 import { Response } from 'express';
 import * as path from 'path';
