@@ -1,34 +1,48 @@
-import { notFound } from "next/navigation"
-import { DashboardHeader } from "@/components/dashboard/header"
-import { DashboardShell } from "@/components/dashboard/shell"
-import { CompanyFileManager } from "@/components/company/file-manager"
+// frontend/src/app/dashboard/[company]/page.tsx
+import { notFound } from "next/navigation";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardShell } from "@/components/dashboard/shell";
+import { CompanyFileManager } from "@/components/company/file-manager";
 
-// List of valid companies
-const companies = ["mapa", "np", "telhas", "telhaco", "metro"]
+// Aqui você mapeia a rota (mapa, np, telhas, telhaco) PARA:
+// 1) O texto que aparece no header (displayName)
+// 2) O código que está no seu banco (codigoSistema)
+const companyMap: Record<string, { displayName: string; codigoSistema: string }> = {
+  mapa:    { displayName: "MAPA",    codigoSistema: "999" },
+  np:      { displayName: "N&P",     codigoSistema: "000" },
+  telhas:  { displayName: "TELHAS",  codigoSistema: "222" },
+  telhaco: { displayName: "TELHAÇO", codigoSistema: "111" },
+  // metro:  { displayName: "METRO",  codigoSistema: "333" }, // Exemplo
+};
 
-export default function CompanyPage({ params }: { params: { company: string } }) {
-  const company = params.company.toLowerCase()
+export default function CompanyPage({
+  params,
+}: {
+  params: { company: string };
+}) {
+  const key = params.company.toLowerCase();
+  const companyInfo = companyMap[key];
 
-  // Check if the company is valid
-  if (!companies.includes(company)) {
-    notFound()
+  if (!companyInfo) {
+    notFound();
   }
 
-  // Format company name for display
-  const companyNames: Record<string, string> = {
-    mapa: "MAPA",
-    np: "N&P",
-    telhas: "TELHAS",
-    telhaco: "TELHAÇO",
-    metro: "METRO",
-  }
-
-  const displayName = companyNames[company] || company.toUpperCase()
+  const { displayName, codigoSistema } = companyInfo;
 
   return (
     <DashboardShell>
-      <DashboardHeader heading={displayName} subheading="Gerenciamento de arquivos financeiros" />
-      <CompanyFileManager company={displayName} />
+      <DashboardHeader
+        heading={displayName}
+        subheading="Gerenciamento de arquivos financeiros"
+      />
+      {/* Agora você passa exatamente o código que o Prisma espera */}
+      <CompanyFileManager
+        company={{
+          id: key,
+          nome: displayName,
+          codigoSistema,  // ex: '999', '000', '222' ou '111'
+        }}
+      />
     </DashboardShell>
-  )
+  );
 }
