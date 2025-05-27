@@ -1,15 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+}
+
+model Empresa {
+  id            String    @id @default(uuid())
+  nome          String
+  cnpj          String    @unique
+  codigoSistema String    @unique
+  apelido       String?
+  regras        Json?
+  createdAt     DateTime  @default(now())
+  processes     Process[]
+}
+
+model Process {
+  id        String          @id @default(uuid())
+  nome      String
+  empresaId String
+  status    String          @default("pendente")
+  erro      String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  empresa   Empresa         @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  logs      ProcessingLog[]
+}
+
+model ProcessingLog {
+  id             String   @id @default(uuid())
+  fileUrl        String   // Agora obrigatório
+  outputFileName String
+  processedAt    DateTime @default(now())
+  status         String   @default("Success")
+  message        String?
+  processId      String
+  process        Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+}
+
