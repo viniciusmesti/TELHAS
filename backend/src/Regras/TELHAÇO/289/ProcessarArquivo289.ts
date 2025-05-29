@@ -339,7 +339,7 @@ function processarContabil(
   const debito = MAPEAMENTOS.DESPESA[dados.tipoDespesa.toLowerCase()] || '0000';
   const dataFormatada = Formatador.formatarData(dados.dataPagamento);
   const valorFormatado = Formatador.formatarValor(dados.valorPagamento);
-  const historico = `292; CFE. DOC. ${infoDuplicata.historicoNota} - ${dados.parceiro} - MOTORISTA: ${dados.motorista.toUpperCase()} PLACA: ${dados.placa.toUpperCase()}`;
+  const historico = `CFE. DOC. ${infoDuplicata.historicoNota} - ${dados.parceiro} - MOTORISTA: ${dados.motorista.toUpperCase()} PLACA: ${dados.placa.toUpperCase()}`;
 
   resultado.contabil.push(
     `${localImport};${dataFormatada};${debito};${dados.meioPagamento};${valorFormatado};292;${historico}`,

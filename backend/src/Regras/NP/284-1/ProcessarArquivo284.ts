@@ -98,8 +98,8 @@ export function transformData(rows: any[]): string[] {
       );
       // Lançamento extra – Dentro da Matriz (local fixo "0001")
       let extraAccount = '';
-      if (filial === '14') extraAccount = '1513';
-      else if (filial === '15') extraAccount = '5104';
+      if (filial === '14') extraAccount = '1515';
+      else if (filial === '15') extraAccount = '5105';
       output.push(
         `0001;${dataBaixa};${banco};${extraAccount};${valorBaixa};1189;${historicoBase}`,
       );

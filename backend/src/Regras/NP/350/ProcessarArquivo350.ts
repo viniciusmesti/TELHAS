@@ -107,7 +107,7 @@ export function processarRegra350(rows: any[]): string[] {
       // D = conta informada na coluna J (índice 10)
       const contaDebitoExtra = row[10] ? row[10].toString().trim() : '';
       // C = conforme tabela: se filial "14" → 1513; se filial "15" → 5104
-      const contaCreditoExtra = filial === '14' ? '1513' : '5104';
+      const contaCreditoExtra = filial === '14' ? '1515' : '5105';
       output.push(
         `0001;${dataBaixa};${contaDebitoExtra};${contaCreditoExtra};${valorBaixa};${hist}`,
       );
