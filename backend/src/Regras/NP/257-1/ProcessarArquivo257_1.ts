@@ -10,8 +10,8 @@ const LOCAL_FILIAL_3 = '0003';
 const CONTA_CHEQUES_RECEBER = '1483';
 const CONTA_C_C_MATRIZ = '1514';
 const CONTA_ADIANTAMENTO_CLIENTE = '893';
-const CONTA_BANCO_FILIAL_2 = '1513';
-const CONTA_BANCO_FILIAL_3 = '5104';
+const CONTA_BANCO_FILIAL_2 = '1515';
+const CONTA_BANCO_FILIAL_3 = '5105';
 
 // Tipo de relatório que será processado
 const TIPO_RELATORIO_PROCESSAR = '257/1';
