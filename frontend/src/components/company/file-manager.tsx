@@ -190,19 +190,18 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
 
       // mapeia processedFiles -> nosso ProcessedFile
       const novasEntradas = Object.entries(resp.processedFiles).map(
-        ([key, supabasePath]) => {
-          const pathStr = supabasePath as string;
-          const filename = pathStr.split("/").pop()!;
+        ([key, info]) => {
+          const filename = info.path.split('/').pop()!;
           return {
             id: key,
             name: filename,
-            size: 0,
+            size: info.size,  // <— pega o size do backend
             downloadUrl: getDownloadUrl(company.codigoSistema, filename),
             uploadDate: new Date().toISOString(),
           } as ProcessedFile;
         }
       );
-
+      
       setFiles((prev) => ({
         ...prev,
         [categoryId]: [...prev[categoryId], ...novasEntradas],

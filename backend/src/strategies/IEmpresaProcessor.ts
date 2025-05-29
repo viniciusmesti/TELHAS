@@ -6,7 +6,7 @@ export interface IEmpresaProcessor {
     outputDir: string,
     codigoSistema: string,
     supabaseService: SupabaseService,
-  ): Promise<{ [key: string]: string }>;
+  ): Promise<Record<string, { path: string; size: number }>>;
 
   processPagamentos(
     inputExcelPath: string,

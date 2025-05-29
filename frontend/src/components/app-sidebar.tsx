@@ -38,7 +38,7 @@ export function AppSidebar() {
           <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
             <FileUp className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg bg-clip-text text-transparent bg-gradient-primary">FinDocs</span>
+          <span className="text-lg bg-clip-text text-transparent bg-gradient-primary">Contabilizza</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

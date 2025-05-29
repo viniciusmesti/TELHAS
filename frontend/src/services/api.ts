@@ -14,7 +14,10 @@ export const api = axios.create({ baseURL });
 
 export interface UploadResponse {
   message: string;
-  processedFiles: Record<string, string>;
+  processedFiles: Record<string, {
+    path: string;
+    size: number;
+  }>;
 }
 
 // ——— Empresas ———

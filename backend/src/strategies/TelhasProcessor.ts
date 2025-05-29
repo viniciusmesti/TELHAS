@@ -19,275 +19,146 @@ import { processarArquivo337 as processarArquivo337Telhas } from 'src/Regras/TEL
 import { processarArquivo347 as processarArquivo347Telhas } from 'src/Regras/TELHAS/347/ProcessarArquivo347';
 import { processarArquivo349 as processarArquivo349Telhas } from 'src/Regras/TELHAS/349/ProcessarArquivo349';
 import { processarArquivo350 as processarArquivo350 } from 'src/Regras/TELHAS/350/ProcessarArquivo350';
-import {
-  exportToTxt289,
-  processarArquivo289Telhacao,
-} from 'src/Regras/TELHAÇO/289/ProcessarArquivo289';
+import { exportToTxt289 } from 'src/Regras/TELHAÇO/289/ProcessarArquivo289';
 import { Processador326 } from 'src/Regras/TELHAS/326/ProcessarArquivo326';
 import { processarArquivo289Telhas } from 'src/Regras/TELHAS/289/processarArquivo289';
 
+interface ProcessedInfo {
+  path: string;
+  size: number;
+}
+
 @Injectable()
 export class TelhasProcessor implements IEmpresaProcessor {
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(private readonly supabaseService: SupabaseService) {}
+
+  private async uploadIfNotEmpty(
+    key: string,
+    filePath: string,
+    codigoSistema: string,
+    result: Record<string, ProcessedInfo>,
+  ) {
+    const stats = fs.statSync(filePath);
+    if (stats.size > 0) {
+      const fileBuffer = fs.readFileSync(filePath);
+      const { supabasePath, error } = await this.supabaseService.uploadProcessedFile(
+        filePath,
+        fileBuffer,
+        codigoSistema,
+      );
+      result[key] = {
+        path: supabasePath,
+        size: stats.size,
+      };
+    } else {
+      fs.unlinkSync(filePath); // remove vazios
+    }
+  }
 
   async processUnificado(
     inputExcelPath: string,
     outputDir: string,
     codigoSistema: string,
-  ): Promise<{ [key: string]: string }> {
-    const result: { [key: string]: string } = {};
+  ): Promise<Record<string, ProcessedInfo>> {
+    const result: Record<string, ProcessedInfo> = {};
 
     // Regra 255
     try {
       const output255 = path.join(outputDir, 'saida255.txt');
       await processarArquivo255Telhas(inputExcelPath, output255);
-      const fileBuffer = fs.readFileSync(output255);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output255,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra255'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra255'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra255', output255, codigoSistema, result);
+    } catch {}
 
     //257_1
     try {
       const output257_1 = path.join(outputDir, 'saida257_1.txt');
       await processarArquivos257_1Telhas(inputExcelPath, output257_1);
-      const fileBuffer = fs.readFileSync(output257_1);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output257_1,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra257_1'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra257_1'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra257_1', output257_1, codigoSistema, result);
+    } catch {}
 
     //257_2
     try {
       const output257_2 = path.join(outputDir, 'saida257_2.txt');
       await processarArquivo257_2Telhas(inputExcelPath, output257_2);
-      const fileBuffer = fs.readFileSync(output257_2);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output257_2,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra257_2'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra257_2'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra257_2', output257_2, codigoSistema, result);
+    } catch {}
 
     //282
     try {
       const output282 = path.join(outputDir, 'saida282.txt');
       await processarArquivo282Telhas(inputExcelPath, output282);
-      const fileBuffer = fs.readFileSync(output282);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output282,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra282'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra282'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra282', output282, codigoSistema, result);
+    } catch {}
 
     //283
     try {
       const output283 = path.join(outputDir, 'saida283.txt');
       await processarArquivo283Telhas(inputExcelPath, output283);
-      const fileBuffer = fs.readFileSync(output283);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output283,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra283'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra283'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra283', output283, codigoSistema, result);
+    } catch {}
 
     //284
     try {
       const output284 = path.join(outputDir, 'saida284.txt');
       await processarArquivo284_1Telhas(inputExcelPath, output284);
-      const fileBuffer = fs.readFileSync(output284);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output284,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra284'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra283'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra284', output284, codigoSistema, result);
+    } catch {}
 
     // 328
     try {
       const output328 = path.join(outputDir, 'saida328.txt');
       await processarArquivo328Telhas(inputExcelPath, output328);
-      const fileBuffer = fs.readFileSync(output328);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output328,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra328'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra328'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra328', output328, codigoSistema, result);
+    } catch {}
 
     // 329
     try {
       const output329 = path.join(outputDir, 'saida329.txt');
       await processarArquivo329Telhas(inputExcelPath, output329);
-      const fileBuffer = fs.readFileSync(output329);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output329,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra329'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra329'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra329', output329, codigoSistema, result);
+    } catch {}
 
     // 335
     try {
       const output335 = path.join(outputDir, 'saida335.txt');
       await processarArquivo335Telhas(inputExcelPath, output335);
-      const fileBuffer = fs.readFileSync(output335);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output335,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra335'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra335'] = `Erro; ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra335', output335, codigoSistema, result);
+    } catch {}
 
     // 336
     try {
       const output336 = path.join(outputDir, 'saida336.txt');
       await processarArquivo336Telhas(inputExcelPath, output336);
-      const fileBuffer = fs.readFileSync(output336);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output336,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra336'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra336'] = `Erro: ${err.message};`;
-    }
+      await this.uploadIfNotEmpty('regra336', output336, codigoSistema, result);
+    } catch {}
 
     // 337
     try {
       const output337 = path.join(outputDir, 'saida337.txt');
       await processarArquivo337Telhas(inputExcelPath, output337);
-      const fileBuffer = fs.readFileSync(output337);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output337,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra337'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra337'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra337', output337, codigoSistema, result);
+    } catch {}
 
     // 347
     try {
       const output347 = path.join(outputDir, 'saida347.txt');
       await processarArquivo347Telhas(inputExcelPath, output347);
-      const fileBuffer = fs.readFileSync(output347);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output347,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra347'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra347'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra347', output347, codigoSistema, result);
+    } catch {}
 
     // 349
     try {
       const output349 = path.join(outputDir, 'saida349.txt');
       await processarArquivo349Telhas(inputExcelPath, output349);
-      const fileBuffer = fs.readFileSync(output349);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output349,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra349'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra349'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra349', output349, codigoSistema, result);
+    } catch {}
 
     // 350
     try {
       const output350 = path.join(outputDir, 'saida350.txt');
       await processarArquivo350(inputExcelPath, output350);
-      const fileBuffer = fs.readFileSync(output350);
-      const { supabasePath, error } =
-        await this.supabaseService.uploadProcessedFile(
-          output350,
-          fileBuffer,
-          codigoSistema,
-        );
-      result['regra350'] = error
-        ? `Erro ao enviar: ${error.message}`
-        : supabasePath;
-    } catch (err: any) {
-      result['regra350'] = `Erro: ${err.message}`;
-    }
+      await this.uploadIfNotEmpty('regra350', output350, codigoSistema, result);
+    } catch {}
 
     return result;
   }
