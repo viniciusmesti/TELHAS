@@ -50,3 +50,11 @@ model ProcessingLog {
   process        Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
 }
 
+model DownloadHistory {
+  id        String   @id @default(uuid())
+  filename  String
+  company   String
+  category  String
+  user      String
+  createdAt DateTime @default(now())
+}

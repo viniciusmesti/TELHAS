@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Building2, ChevronRight, Cog, FileUp, Home, Plus, BarChart3 } from "lucide-react"
+import { Building2, ChevronRight, Cog, FileUp, Home, Plus, BarChart3, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
@@ -131,6 +131,23 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+              <SidebarGroupLabel className="text-primary/80">Histórico</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/dashboard/history"
+                      className="flex items-center gap-2"
+                    >
+                      <Clock className="h-4 w-4" />
+                      Histórico de Downloads
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
