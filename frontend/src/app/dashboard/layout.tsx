@@ -28,10 +28,10 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
                   className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow"
                   aria-hidden="true"
                 >
-                  <span className="font-bold text-white text-lg">F</span>
+                  <span className="font-bold text-white text-lg">C</span>
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gradient-primary">FinDocs</h1>
+                  <h1 className="text-xl font-bold text-gradient-primary">Contabilizza</h1>
                   <p className="text-xs text-muted-foreground">Sistema Financeiro</p>
                 </div>
               </div>

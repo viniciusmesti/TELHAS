@@ -63,7 +63,14 @@ export function transformData(rows: any[]): string[] {
     }
 
     // Coluna R: Data da baixa (ignora horário)
-    const dataBaixa = row[18] ? row[18].toString().split(' ')[0] : '';
+    let dataBaixa = '';
+const raw = row[18];
+if (raw instanceof Date) {
+  // formate direto a data do objeto:
+  dataBaixa = raw.toLocaleDateString('pt-BR');
+} else if (typeof raw === 'string') {
+  dataBaixa = raw.split(' ')[0];
+}
     // Coluna S: Valor da baixa
     const valorBaixa = row[19] ? parseFloat(row[19]).toFixed(2) : '0.00';
     // Coluna AG: Taxa administrativa

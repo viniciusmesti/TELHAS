@@ -255,5 +255,3 @@ export function SidebarInset({ className, children, ...props }: SidebarInsetProp
     </div>
   )
 }
-
-// Removendo os componentes antigos que estavam causando erros

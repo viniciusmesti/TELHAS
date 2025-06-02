@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Building2, ChevronRight, Cog, FileUp, Home, Plus, BarChart3 } from "lucide-react"
+import { Building2, ChevronRight, Cog, FileUp, Home, Plus, BarChart3, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
@@ -38,7 +38,7 @@ export function AppSidebar() {
           <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
             <FileUp className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg bg-clip-text text-transparent bg-gradient-primary">FinDocs</span>
+          <span className="text-lg bg-clip-text text-transparent bg-gradient-primary">Contabilizza</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -131,6 +131,23 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+              <SidebarGroupLabel className="text-primary/80">Histórico</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/dashboard/history"
+                      className="transition-all duration-300 hover:bg-primary/20 data-[active=true]:bg-primary/30 data-[active=true]:shadow-glow"
+                    >
+                      <Clock className="h-4 w-4" />
+                      Histórico de Downloads
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
