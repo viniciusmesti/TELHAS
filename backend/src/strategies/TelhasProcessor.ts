@@ -168,77 +168,65 @@ export class TelhasProcessor implements IEmpresaProcessor {
     duplicatasPath: string,
     outputDir: string,
     codigoSistema: string,
-  ): Promise<{ [key: string]: string }> {
-    const result: { [key: string]: string } = {};
-    try {
-      // Executa o processamento específico da regra 289
-      const { contabil, fiscal, duplicatas } = await processarArquivo289Telhas(
-        pagamentosPath,
-        duplicatasPath,
-      );
+  ): Promise<Record<string, { path: string; size: number }>> {
+    const result: Record<string, { path: string; size: number }> = {};
 
-      // Define os caminhos para os arquivos de saída
-      const outputContabilPath = path.join(outputDir, 'contabil289_np.txt');
-      const outputFiscalPath = path.join(outputDir, 'fiscal289_np.txt');
-      const outputDuplicatasPath = path.join(
-        outputDir,
-        'duplicatas_nao_encontradas289_np.xlsx',
-      );
+    const { contabil, fiscal, duplicatas } = await processarArquivo289Telhas(
+      pagamentosPath,
+      duplicatasPath,
+    );
 
-      // Exporta os arquivos TXT
-      // Exporta os arquivos TXT
-      exportToTxt289(contabil, outputContabilPath);
-      exportToTxt289(fiscal, outputFiscalPath);
+    const outputContabilPath   = path.join(outputDir, 'contabil289_np.txt');
+    const outputFiscalPath     = path.join(outputDir, 'fiscal289_np.txt');
+    const outputDuplicatasPath = path.join(
+      outputDir,
+      'duplicatas_nao_encontradas289_np.xlsx',
+    );
 
-      // Exporta duplicatas para Excel ou gera um arquivo padrão se não houver registros
-      if (duplicatas.length > 0) {
-        const workbookOut = xlsx.utils.book_new();
-        const worksheetOut = xlsx.utils.json_to_sheet(duplicatas);
-        xlsx.utils.book_append_sheet(workbookOut, worksheetOut, 'Duplicatas');
-        xlsx.writeFile(workbookOut, outputDuplicatasPath);
-      } else {
-        fs.writeFileSync(
-          outputDuplicatasPath,
-          'Arquivo gerado automaticamente, mas não há duplicatas não encontradas.\r\n',
-          { encoding: 'utf8' },
-        );
-      }
+    exportToTxt289(contabil, outputContabilPath);
+    exportToTxt289(fiscal,   outputFiscalPath);
 
-      const fileBufferContabil = fs.readFileSync(outputContabilPath);
-      let uploadResult = await this.supabaseService.uploadProcessedFile(
-        outputContabilPath,
-        fileBufferContabil,
-        codigoSistema,
-      );
-      result['regra289_contabil'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
-
-      const fileBufferFiscal = fs.readFileSync(outputFiscalPath);
-      uploadResult = await this.supabaseService.uploadProcessedFile(
-        outputFiscalPath,
-        fileBufferFiscal,
-        codigoSistema,
-      );
-      result['regra289_fiscal'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
-
-      const fileBufferDuplicatas = fs.readFileSync(outputDuplicatasPath);
-      uploadResult = await this.supabaseService.uploadProcessedFile(
+    if (duplicatas.length > 0) {
+      const wb = xlsx.utils.book_new();
+      const ws = xlsx.utils.json_to_sheet(duplicatas);
+      xlsx.utils.book_append_sheet(wb, ws, 'Duplicatas');
+      xlsx.writeFile(wb, outputDuplicatasPath);
+    } else {
+      fs.writeFileSync(
         outputDuplicatasPath,
-        fileBufferDuplicatas,
-        codigoSistema,
+        'Arquivo gerado automaticamente, mas não há duplicatas não encontradas.\r\n',
+        'utf8',
       );
-      result['regra289_duplicatas'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
-
-      return result;
-    } catch (error) {
-      console.error('Erro no processamento da regra 289:', error);
-      throw error;
     }
+
+    const statContabil   = fs.statSync(outputContabilPath);
+    const bufContabil    = fs.readFileSync(outputContabilPath);
+    const upContabil     = await this.supabaseService.uploadProcessedFile(
+      outputContabilPath,
+      bufContabil,
+      codigoSistema,
+    );
+    result['regra289_contabil']  = { path: upContabil.supabasePath, size: statContabil.size };
+
+    const statFiscal     = fs.statSync(outputFiscalPath);
+    const bufFiscal      = fs.readFileSync(outputFiscalPath);
+    const upFiscal       = await this.supabaseService.uploadProcessedFile(
+      outputFiscalPath,
+      bufFiscal,
+      codigoSistema,
+    );
+    result['regra289_fiscal']    = { path: upFiscal.supabasePath, size: statFiscal.size };
+
+    const statDuplicatas = fs.statSync(outputDuplicatasPath);
+    const bufDuplicatas  = fs.readFileSync(outputDuplicatasPath);
+    const upDuplicatas   = await this.supabaseService.uploadProcessedFile(
+      outputDuplicatasPath,
+      bufDuplicatas,
+      codigoSistema,
+    );
+    result['regra289_duplicatas']= { path: upDuplicatas.supabasePath, size: statDuplicatas.size };
+
+    return result;
   }
 
   async processRegra326(
@@ -246,60 +234,40 @@ export class TelhasProcessor implements IEmpresaProcessor {
     duplicatasPath: string,
     outputDir: string,
     codigoSistema: string,
-  ): Promise<{ [key: string]: string }> {
-    const result: { [key: string]: string } = {};
-    try {
-      const outputContabilPath = path.join(outputDir, 'contabil326_np.txt');
-      const outputFiscalPath = path.join(outputDir, 'fiscal326_np.txt');
-      const outputDuplicatasPath = path.join(
-        outputDir,
-        'duplicatas_nao_encontradas326_np.xlsx',
-      );
+  ): Promise<Record<string, { path: string; size: number }>> {
+    const result: Record<string, { path: string; size: number }> = {};
 
-      await Processador326.processarArquivo326(
-        pagamentosPath,
-        duplicatasPath,
-        outputContabilPath,
-        outputFiscalPath,
-        outputDuplicatasPath,
-      );
+    await Processador326.processarArquivo326(
+      pagamentosPath,
+      duplicatasPath,
+      path.join(outputDir, 'contabil326_np.txt'),
+      path.join(outputDir, 'fiscal326_np.txt'),
+      path.join(outputDir, 'duplicatas_nao_encontradas326_np.xlsx'),
+    );
 
-      const fileBufferContabil = fs.readFileSync(outputContabilPath);
-      let uploadResult = await this.supabaseService.uploadProcessedFile(
-        outputContabilPath,
-        fileBufferContabil,
+    const files = [
+      { key: 'regra326_contabil',   name: 'contabil326_np.txt' },
+      { key: 'regra326_fiscal',     name: 'fiscal326_np.txt' },
+      { key: 'regra326_duplicatas', name: 'duplicatas_nao_encontradas326_np.xlsx' },
+    ];
+
+    for (const { key, name } of files) {
+      const fullPath = path.join(outputDir, name);
+      const stat     = fs.statSync(fullPath);
+      const buffer   = fs.readFileSync(fullPath);
+
+      const up = await this.supabaseService.uploadProcessedFile(
+        fullPath,
+        buffer,
         codigoSistema,
       );
-      result['regra326_contabil'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
 
-      const fileBufferFiscal = fs.readFileSync(outputFiscalPath);
-      uploadResult = await this.supabaseService.uploadProcessedFile(
-        outputFiscalPath,
-        fileBufferFiscal,
-        codigoSistema,
-      );
-      result['regra326_fiscal'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
-
-      const fileBufferDuplicatas = fs.readFileSync(outputDuplicatasPath);
-      uploadResult = await this.supabaseService.uploadProcessedFile(
-        outputDuplicatasPath,
-        fileBufferDuplicatas,
-        codigoSistema,
-      );
-      result['regra326_duplicatas'] = uploadResult.error
-        ? `Erro ao enviar: ${uploadResult.error.message}`
-        : uploadResult.supabasePath;
-
-      return result;
-    } catch (error) {
-      console.error('Erro no processamento da regra 326:', error);
-      throw error;
+      result[key] = { path: up.supabasePath, size: stat.size };
     }
+
+    return result;
   }
+
 
   async processPagamentos(
     inputExcelPath: string,

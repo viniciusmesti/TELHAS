@@ -139,7 +139,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <Link
                       href="/dashboard/history"
-                      className="flex items-center gap-2"
+                      className="transition-all duration-300 hover:bg-primary/20 data-[active=true]:bg-primary/30 data-[active=true]:shadow-glow"
                     >
                       <Clock className="h-4 w-4" />
                       Histórico de Downloads

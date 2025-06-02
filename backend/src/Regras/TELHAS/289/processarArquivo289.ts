@@ -223,11 +223,13 @@ function processarPagamentos(
   };
   console.log(`🔄 Total de linhas lidas: ${pagamentosRows.length}`);
 
-  pagamentosRows.forEach((row) => {
+  // Substitui o forEach por for...of para usar continue
+  for (const row of pagamentosRows) {
     const dados = extrairDadosPagamento(row);
 
+    // Valida e pula registros inválidos
     if (!validarDadosPagamento(dados)) {
-      return;
+      continue;
     }
     console.log(
       `➡️ Lendo linha: Relatório=${dados.relatorio}, Empresa=${dados.importLocation}, TipoOperação=${dados.tipoOperacao}, TipoDespesa=${dados.tipoDespesa}`,
@@ -236,8 +238,9 @@ function processarPagamentos(
     const localImport = MAPEAMENTOS.IMPORTACAO[dados.importLocation];
     const numeroDuplicata = Formatador.normalizarDuplicata(dados.numeroNota);
 
-    let infoDuplicata = mapeamentoDuplicatas.get(numeroDuplicata);
+    const infoDuplicata = mapeamentoDuplicatas.get(numeroDuplicata);
 
+    // Se não encontrou duplicata, registra apenas em duplicatas e pula
     if (!infoDuplicata) {
       adicionarDuplicataNaoEncontrada(
         resultado,
@@ -245,34 +248,36 @@ function processarPagamentos(
         localImport,
         numeroDuplicata,
       );
-
-      // Criar info "genérico" para seguir o lançamento contábil
-      infoDuplicata = {
-        chaveDuplicata: numeroDuplicata,
-        numeroDuplicata: numeroDuplicata,
-        historicoNota: numeroDuplicata,
-      };
+      continue;
     }
 
-    const tipoContabilReconhecido =
-      dados.tipoOperacao === CONFIG.VALORES.TIPO_OPERACAO_CONTABIL ||
-      !!MAPEAMENTOS.DESPESA[dados.tipoDespesa];
-
-    console.log(
-      `[DEBUG] tipoOperacao="${dados.tipoOperacao}", tipoDespesa="${dados.tipoDespesa}"`,
-    );
-
-    if (tipoContabilReconhecido) {
+    // Processa apenas se a duplicata foi encontrada
+    if (dados.tipoOperacao === CONFIG.VALORES.TIPO_OPERACAO_CONTABIL) {
       processarContabil(resultado, dados, localImport, infoDuplicata);
       console.log('🔢 Enviando para CONTÁBIL');
     } else {
       processarFiscal(resultado, dados, localImport, infoDuplicata);
       console.log('📄 Enviando para FISCAL');
     }
-  });
+  }
 
+  // Ordena por data (contábil e duplicatas)
   ordenarPorData(resultado.contabil);
+  ordenarDuplicatasPorData(resultado.duplicatas);
+
   return resultado;
+}
+
+// Função auxiliar para ordenar duplicatas não encontradas por data
+function ordenarDuplicatasPorData(duplicatas: any[]): void {
+  duplicatas.sort((a, b) => {
+    const [dA, mA, yA] = a.Data.split('/').map(Number);
+    const [dB, mB, yB] = b.Data.split('/').map(Number);
+    return (
+      new Date(2000 + yA, mA - 1, dA).getTime() -
+      new Date(2000 + yB, mB - 1, dB).getTime()
+    );
+  });
 }
 
 function extrairDadosPagamento(row: any): DadosPagamento {
