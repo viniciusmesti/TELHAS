@@ -12,7 +12,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-gradient-light dark:bg-gradient-futuristic transition-colors duration-300">
-        <AppSidebar />
+        
         <SidebarInset className="flex-1">
           <header 
             className="sticky top-0 z-10 flex h-16 items-center px-4 header-gradient shadow-lg"
