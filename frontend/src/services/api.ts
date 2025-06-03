@@ -1,5 +1,21 @@
-// frontend/src/services/api.ts
 import axios from "axios";
+
+export interface DashboardStats {
+  totalUploads: number;
+  totalDownloads: number;
+  empresasAtivas: number;
+  ultimoUpload: {
+    processedAt: string;
+    empresa: string;
+    filename: string;
+  } | null;
+}
+
+// ——— Dashboard Stats ———
+export const getDashboardStats = async (): Promise<DashboardStats> => {
+  const response = await api.get<DashboardStats>("/dashboard/stats");
+  return response.data;
+};
 
 // Monta a baseURL sem quebrar no SSR
 let baseURL = "http://localhost:3000";
