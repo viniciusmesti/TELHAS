@@ -7,6 +7,7 @@ import { EmpresaModule } from './empresas/empresa.module';
 import { ProcessModule } from './process/process.module';
 import { SupabaseProvider } from './supabase/supabase.client';
 import { DownloadsModule } from './downloads/downloads.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { DownloadsModule } from './downloads/downloads.module';
     AuthModule,
     EmpresaModule,
     ProcessModule,
-    DownloadsModule
+    DownloadsModule,
+    DashboardModule,
   ],
   providers: [PrismaService, SupabaseProvider],
   exports: [PrismaService, SupabaseProvider],

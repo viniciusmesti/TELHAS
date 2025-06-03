@@ -21,6 +21,9 @@ import {
   UploadResponse,
 } from "@/services/api";
 
+// 1️⃣ Importa o hook do contexto
+import { useDashboard } from "@/contexts/dashboard-context";
+
 const fileCategories = [
   { id: "recebimentos", name: "Recebimentos", tipo: "unificado" },
   { id: "pagamentos",   name: "Pagamentos",   tipo: "unificado" },
@@ -53,6 +56,9 @@ interface UploadStatus {
 }
 
 export function CompanyFileManager({ company }: CompanyFileManagerProps) {
+  // 2️⃣ Obtém a função de disparo de refresh
+  const { triggerStatsRefresh } = useDashboard();
+
   const [files, setFiles] = React.useState<Record<string, ProcessedFile[]>>({
     recebimentos: [],
     pagamentos: [],
@@ -62,9 +68,9 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
   const [isDownloading, setIsDownloading] = React.useState(false);
   const [uploadStatus, setUploadStatus] = React.useState<Record<string, UploadStatus>>({
     recebimentos: { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
-    pagamentos: { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
-    regra289: { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
-    regra326: { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
+    pagamentos:   { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
+    regra289:     { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
+    regra326:     { isUploading: false, progress: 0, currentFile: '', status: 'idle', message: '' },
   });
 
   const simulateProgress = (categoryId: string, fileName: string) => {
@@ -152,12 +158,13 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
     }
   };
 
+  // 3️⃣ Modificamos handleFileUpload para chamar triggerStatsRefresh após sucesso
   const handleFileUpload = async (categoryId: string, selected: File[]) => {
     if (uploadStatus[categoryId].isUploading) return;
 
     const categoria = fileCategories.find(c => c.id === categoryId)!;
     const fileName = selected.length ? selected[0].name : 'arquivos';
-    simulateProgress(categoryId, fileName);
+    const uploadInterval = simulateProgress(categoryId, fileName);
 
     const fd = new FormData();
     if (categoria.tipo === 'unificado' && selected.length) {
@@ -169,10 +176,13 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
 
     try {
       let resp: UploadResponse;
-      if (categoria.tipo === 'unificado') resp = await uploadUnificado(fd);
-      else resp = await uploadRegra(categoria.tipo as '289' | '326', fd);
+      if (categoria.tipo === 'unificado') {
+        resp = await uploadUnificado(fd);
+      } else {
+        resp = await uploadRegra(categoria.tipo as '289' | '326', fd);
+      }
 
-      // Mapeia processedFiles, tratando casos sem 'path'
+      // Constrói as novas entradas para a lista de arquivos
       const novasEntradas = Object.entries(resp.processedFiles).map(
         ([key, info]) => {
           let filePath: string;
@@ -196,15 +206,21 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
         }
       );
 
+      // Atualiza a lista de arquivos no estado
       setFiles(prev => ({
         ...prev,
         [categoryId]: [...prev[categoryId], ...novasEntradas],
       }));
 
+      // ✅ DISPARA o refresh das estatísticas globais
+      triggerStatsRefresh();
+
       finishProgress(categoryId, true, 'Upload concluído com sucesso!');
     } catch (err: any) {
       console.error('Erro fazendo upload:', err);
       finishProgress(categoryId, false, 'Erro no upload: ' + (err.message ?? err));
+    } finally {
+      clearInterval(uploadInterval);
     }
   };
 
