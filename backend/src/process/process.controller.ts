@@ -20,6 +20,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { createEmpresaProcessor } from 'src/strategies/EmpresaProcessorFactory';
 import { MapaProcessor } from 'src/strategies/MapaProcessor';
+import { BadRequestException } from '@nestjs/common';
+
 
 @Controller('process')
 export class ProcessController {
@@ -29,6 +31,51 @@ export class ProcessController {
     private readonly supabaseService: SupabaseService,
     private readonly downloadsService: DownloadsService,
   ) {}
+
+@Post('upload/metro')
+@UseInterceptors(FilesInterceptor('files', 2, { dest: './uploads' }))
+async uploadMetro(
+  @UploadedFiles() files: Express.Multer.File[],
+  @Body('codigoSistema') codigoSistema: string,
+  @Res() res: Response,
+) {
+  const pagamentosFile = files.find(f => !f.originalname.toLowerCase().includes('exportacao'));
+  const exportacaoFile = files.find(f => f.originalname.toLowerCase().includes('exportacao'));
+
+  if (!pagamentosFile || !exportacaoFile) {
+    return res.status(400).json({ message: 'É necessário enviar o Excel principal e o Exportacao.xlsx' });
+  }
+
+  try {
+    const empresa = await this.prisma.empresa.findUnique({ where: { codigoSistema } });
+    if (!empresa) {
+      return res.status(400).json({ message: 'Empresa não encontrada.' });
+    }
+
+    const processor = createEmpresaProcessor(codigoSistema, this.supabaseService);
+    const outputDir = path.join(__dirname, '../../uploads', codigoSistema, 'saida');
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+    // Cast to MetroProcessor to access the specific method
+    const metroProcessor = processor as any; // Type assertion for METRO-specific method
+    
+    // Use the specific METRO method that accepts two files
+    const result = await metroProcessor.processUnificadoMetro(
+      pagamentosFile.path,    // pagamentosPath
+      exportacaoFile.path,    // exportacaoPath
+      outputDir,              // outputDir
+      codigoSistema,          // codigoSistema
+    );
+
+    return res.json({
+      message: 'Arquivo processado e enviado com sucesso!',
+      processedFiles: result,
+    });
+  } catch (error) {
+    console.error('Erro no processamento da regra METRO:', error);
+    return res.status(500).json({ message: 'Erro no processamento da regra METRO.', error });
+  }
+}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', { dest: './uploads' }))
@@ -80,7 +127,7 @@ export class ProcessController {
       return res.status(500).json({ message: 'Erro ao processar o arquivo.', error });
     }
   }
-
+  
   @Get('download/:codigoSistema/:filename')
   async downloadFile(
     @Param('codigoSistema') codigoSistema: string,

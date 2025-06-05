@@ -1,4 +1,3 @@
-// frontend/src/app/dashboard/[company]/page.tsx
 import { notFound } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { DashboardShell } from "@/components/dashboard/shell";
@@ -12,8 +11,9 @@ const companyMap: Record<string, { displayName: string; codigoSistema: string }>
   np:      { displayName: "N&P",     codigoSistema: "000" },
   telhas:  { displayName: "TELHAS",  codigoSistema: "222" },
   telhaco: { displayName: "TELHAÇO", codigoSistema: "111" },
-  // metro:  { displayName: "METRO",  codigoSistema: "333" }, // Exemplo
+  metro:   { displayName: "METRO",   codigoSistema: "333" }, // ✅ ATIVADO
 };
+
 
 export default function CompanyPage({
   params,
