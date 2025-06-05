@@ -56,15 +56,21 @@ export async function uploadUnificado(
 
 // ——— Upload de Regra 289 / 326 ———
 export async function uploadRegra(
-  tipo: "289" | "326",
+  tipo: "289" | "326" | "metro",
   formData: FormData
 ): Promise<UploadResponse> {
-  const response = await api.post<UploadResponse>(
-    `/process/upload${tipo}`,
-    formData
-  );
+  let endpoint = '';
+
+  if (tipo === "metro") {
+    endpoint = '/process/upload/metro';
+  } else {
+    endpoint = `/process/upload${tipo}`;
+  }
+
+  const response = await api.post<UploadResponse>(endpoint, formData);
   return response.data;
 }
+
 
 // ——— Download ———
 export function getDownloadUrl(

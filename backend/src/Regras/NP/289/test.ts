@@ -11,48 +11,26 @@ async function testarProcessamento() {
     const baseDir = path.join(__dirname, '..', '..', '..', 'uploads', 'N&P');
 
     // Caminhos de entrada
-    const inputDuplicatasPath = path.join(
-      baseDir,
-      'uploads',
-      'DUPLICATAS EM ABERTO.xlsx',
-    );
+    const inputDuplicatasPath = path.join(baseDir, 'uploads', 'DUPLICATAS EM ABERTO.xlsx');
     const inputPagamentosPath = path.join(baseDir, 'uploads', '289.xlsx');
 
     // Caminhos de saída
-    const outputContabilPath = path.join(
-      baseDir,
-      'saida',
-      'contabil',
-      'contabil289_np.txt',
-    );
-    const outputFiscalPath = path.join(
-      baseDir,
-      'saida',
-      'fiscal',
-      'fiscal289_np.txt',
-    );
-    const outputDuplicatasPath = path.join(
-      baseDir,
-      'saida',
-      'duplicatas',
-      'duplicatas_nao_encontradas289_np.xlsx',
-    );
+    const outputContabilPath = path.join(baseDir, 'saida', 'contabil', 'contabil289_np.txt');
+    const outputFiscalPath = path.join(baseDir, 'saida', 'fiscal', 'fiscal289_np.txt');
+    const outputDuplicatasPath = path.join(baseDir, 'saida', 'duplicatas', 'duplicatas_nao_encontradas289_np.xlsx');
 
     // Cria os diretórios de saída, se não existirem
-    [
-      path.dirname(outputContabilPath),
-      path.dirname(outputFiscalPath),
-      path.dirname(outputDuplicatasPath),
-    ].forEach((dir) => {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-    });
+    [path.dirname(outputContabilPath), path.dirname(outputFiscalPath), path.dirname(outputDuplicatasPath)]
+      .forEach(dir => {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+      });
 
     // Executa o processamento
     const { contabil, fiscal, duplicatas } = await processarArquivo289NP(
       inputPagamentosPath,
-      inputDuplicatasPath,
+      inputDuplicatasPath
     );
 
     // Exporta os arquivos TXT
@@ -65,9 +43,7 @@ async function testarProcessamento() {
       const worksheetOut = xlsx.utils.json_to_sheet(duplicatas);
       xlsx.utils.book_append_sheet(workbookOut, worksheetOut, 'Duplicatas');
       xlsx.writeFile(workbookOut, outputDuplicatasPath);
-      console.log(
-        `📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`,
-      );
+      console.log(`📊 Arquivo de duplicatas não encontradas gerado com ${duplicatas.length} registros.`);
     } else {
       console.log('✅ Nenhuma duplicata para reportar.');
     }

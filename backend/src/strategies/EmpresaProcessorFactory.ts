@@ -4,6 +4,7 @@ import { NpProcessor } from './NpProcessor';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { TelhacoProcessor } from './TelhacoProcessor';
 import { TelhasProcessor } from './TelhasProcessor';
+import { MetroProcessor } from './MetroProcessor';
 
 export function createEmpresaProcessor(
   codigoSistema: string,
@@ -25,6 +26,10 @@ export function createEmpresaProcessor(
     case 'TELHAS':
     case '222':
       return new TelhasProcessor(supabaseService);
+
+    case 'METRO':
+    case '333':
+      return new MetroProcessor(supabaseService);
 
     default:
       throw new Error(`Empresa não suportada: ${codigoSistema}`);

@@ -20,16 +20,7 @@ import {
   getDownloadUrl,
   UploadResponse,
 } from "@/services/api";
-
-// 1️⃣ Importa o hook do contexto
 import { useDashboard } from "@/contexts/dashboard-context";
-
-const fileCategories = [
-  { id: "recebimentos", name: "Recebimentos", tipo: "unificado" },
-  { id: "pagamentos",   name: "Pagamentos",   tipo: "unificado" },
-  { id: "regra289",     name: "Regra 289",     tipo: "289" },
-  { id: "regra326",     name: "Regra 326",     tipo: "326" },
-];
 
 interface CompanyFileManagerProps {
   company: {
@@ -56,8 +47,16 @@ interface UploadStatus {
 }
 
 export function CompanyFileManager({ company }: CompanyFileManagerProps) {
-  // 2️⃣ Obtém a função de disparo de refresh
   const { triggerStatsRefresh } = useDashboard();
+
+  const fileCategories = company.codigoSistema === '333'
+    ? [{ id: "pagamentos", name: "Salários e Tarifas", tipo: "unificado" }]
+    : [
+        { id: "recebimentos", name: "Recebimentos", tipo: "unificado" },
+        { id: "pagamentos",   name: "Pagamentos",   tipo: "unificado" },
+        { id: "regra289",     name: "Regra 289",     tipo: "289" },
+        { id: "regra326",     name: "Regra 326",     tipo: "326" },
+      ];
 
   const [files, setFiles] = React.useState<Record<string, ProcessedFile[]>>({
     recebimentos: [],
@@ -161,22 +160,28 @@ export function CompanyFileManager({ company }: CompanyFileManagerProps) {
   // 3️⃣ Modificamos handleFileUpload para chamar triggerStatsRefresh após sucesso
   const handleFileUpload = async (categoryId: string, selected: File[]) => {
     if (uploadStatus[categoryId].isUploading) return;
-
+  
     const categoria = fileCategories.find(c => c.id === categoryId)!;
     const fileName = selected.length ? selected[0].name : 'arquivos';
     const uploadInterval = simulateProgress(categoryId, fileName);
-
+  
     const fd = new FormData();
-    if (categoria.tipo === 'unificado' && selected.length) {
-      fd.append('file', selected[0]);
+    if (categoria.tipo === 'unificado' && selected.length > 1) {
+      selected.forEach(f => fd.append('files', f)); // ✅ para METRO
+    } else if (categoria.tipo === 'unificado') {
+      fd.append('file', selected[0]); // ✅ para demais empresas
     } else {
-      selected.forEach(f => fd.append('files', f));
+      selected.forEach(f => fd.append('files', f)); // para 289/326
     }
     fd.append('codigoSistema', company.codigoSistema);
-
+  
     try {
       let resp: UploadResponse;
-      if (categoria.tipo === 'unificado') {
+  
+      if (company.codigoSistema === '333') {
+        // 🚀 Chamada especial para METRO
+        resp = await uploadRegra('metro', fd);
+      } else if (categoria.tipo === 'unificado') {
         resp = await uploadUnificado(fd);
       } else {
         resp = await uploadRegra(categoria.tipo as '289' | '326', fd);

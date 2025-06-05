@@ -1,26 +1,25 @@
 import * as path from 'path';
-import { processarSalarioExcel, exportarTxt } from './processarArquivo';
+import * as fs from 'fs';
+import { processarSalarioExcel, exportToTxt } from './processarArquivo';
 
 async function testarProcessamentoMetro() {
   const inputPath = path.join(__dirname, '../../uploads/METRO/01 2025.xlsx');
-  const outputContabil = path.join(
-    __dirname,
-    '../../uploads/METRO/saida/contabil_metro.txt'
-  );
-  const outputFiscal = path.join(
-    __dirname,
-    '../../uploads/METRO/saida/fiscal_metro.txt'
-  );
+  const exportacaoPath = path.join(__dirname, '../../uploads/METRO/Exportacao.xlsx');
+  const outputDir = path.join(__dirname, '../../uploads/METRO/saida');
+
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  const outputContabil = path.join(outputDir, 'contabil_metro.txt');
+  const outputFiscal = path.join(outputDir, 'fiscal_metro.txt');
 
   try {
     console.log('🚀 Iniciando processamento METRO...');
-    const { contabeis, fiscais } = processarSalarioExcel(inputPath);
+    const { contabeis, fiscais } = processarSalarioExcel(inputPath, exportacaoPath);
 
-    // Gera o arquivo de saída contábil
-    exportarTxt(contabeis, outputContabil);
-
-    // Gera o arquivo de saída fiscal
-    exportarTxt(fiscais, outputFiscal);
+    exportToTxt(contabeis, outputContabil);
+    exportToTxt(fiscais, outputFiscal);
 
     console.log('🎉 Processamento finalizado com sucesso!');
   } catch (error) {
@@ -28,4 +27,6 @@ async function testarProcessamentoMetro() {
   }
 }
 
-testarProcessamentoMetro();
+if (require.main === module) {
+  testarProcessamentoMetro();
+}
