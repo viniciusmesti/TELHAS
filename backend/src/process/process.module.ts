@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ProcessService } from './process.service';
 import { ProcessController } from './process.controller';
-import { PrismaService } from '../../prisma/prisma.service';
 import { ProcessingLogService } from './processing-log.service';
 import { SupabaseModule } from 'src/supabase/supabase.module';
-import { SupabaseService } from 'src/supabase/supabase.service';
 import { DownloadsModule } from '../downloads/downloads.module';
 import { PrismaModule } from 'prisma/prisma.module';
+import { DownloadsService } from '../downloads/downloads.service';
 
 @Module({
   imports: [
@@ -16,10 +15,8 @@ import { PrismaModule } from 'prisma/prisma.module';
   ],
   providers: [
     ProcessService,
-    PrismaService,
     ProcessingLogService,
-    SupabaseService,
-    DownloadsModule,
+    DownloadsService,
   ],
   controllers: [ProcessController],
 })
