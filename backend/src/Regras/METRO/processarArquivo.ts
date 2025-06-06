@@ -1,5 +1,5 @@
 // ============================================================================
-// CONFIGURAÇÕES E CONSTANTES ResultadoSalario 
+// IMPORTAÇÕES E CONFIGURAÇÕES
 // ============================================================================
 import * as xlsx from 'xlsx';
 import * as fs from 'fs';
@@ -50,9 +50,7 @@ function formatarData(data: string | Date): string {
   if (!data) return '';
   if (typeof data === 'string') return data;
   const dt = new Date(data);
-  return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}/${dt.getFullYear()}`;
+  return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getFullYear()}`;
 }
 
 function detectarBanco(texto: any): string | null {
@@ -64,8 +62,8 @@ function detectarBanco(texto: any): string | null {
   return null;
 }
 
-function gerarLinhaContabil(tipo: string, data: string, debito: string, credito: string, valor: number, historico: string): string {
-  return `0001;${data};${debito};${credito};${valor.toFixed(2)};882;"${historico}"`;
+function gerarLinhaContabil(tipo: string, data: string, debito: string, credito: string, valor: number, historico: string, codHistorico: string): string {
+  return `0001;${data};${debito};${credito};${valor.toFixed(2)};${codHistorico};"${historico}"`;
 }
 
 function gerarLinhaFiscal(tipo: string, numero: string, data: string, valor: number, desconto: number, info: ExportInfo): string {
@@ -87,12 +85,9 @@ function gerarLinhaFiscal(tipo: string, numero: string, data: string, valor: num
 }
 
 // ============================================================================
-// FUNÇÃO PRINCIPAL DE PROCESSAMENTO
+// FUNÇÃO PRINCIPAL
 // ============================================================================
-export function processarSalarioExcel(
-  pagamentosPath: string,
-  exportacaoPath: string
-): ResultadoSalario {
+export function processarSalarioExcel(pagamentosPath: string, exportacaoPath: string): ResultadoSalario {
   const wb = xlsx.readFile(pagamentosPath);
   const sheet = wb.Sheets[wb.SheetNames[0]];
   const data = xlsx.utils.sheet_to_json<any>(sheet, { defval: '' });
@@ -121,9 +116,10 @@ export function processarSalarioExcel(
 
   for (let i = 0; i < data.length; i++) {
     const row = data[i];
-    const documento: string = String(row[CONFIG.COLUNAS.DOCUMENTO] || '').trim().toUpperCase();
+    const documentoRaw = String(row[CONFIG.COLUNAS.DOCUMENTO] || '').trim().toUpperCase();
+    const documento = documentoRaw;
     const dataPagto = formatarData(row[CONFIG.COLUNAS.DATA]);
-    const valor = Number(row[CONFIG.COLUNAS.VALOR]) || 0;
+    const valorPago = Number(row[CONFIG.COLUNAS.VALOR]) || 0;
     const desconto = Number(row[CONFIG.COLUNAS.DESCONTO]) || 0;
     const credor = String(row[CONFIG.COLUNAS.CREDOR] || '').trim();
 
@@ -136,28 +132,50 @@ export function processarSalarioExcel(
     }
 
     const docNum = documento.match(/\d{2}\/\d{4}/)?.[0] ?? '';
+
+    // ========== CONTÁBEIS ==========
     if (documento.includes('SAL')) {
-      const linha = gerarLinhaContabil('SAL', dataPagto, '126', codigoBanco, valor, `${docNum} ${credor}`);
-      contabeis.push(linha);
-      console.log(CONFIG.MENSAGENS.CONTABIL_GERADA('SAL', linha));
-    } else if (documento.startsWith('NF')) {
-      const partes = documento.split('.');
-      const numero = partes[1]?.trim();
-      const tipo = partes[0];
-      const info = mapaExportacao[numero];
-      if (info) {
-        const linha = gerarLinhaFiscal(tipo, numero, dataPagto, valor, desconto, info);
-        fiscais.push(linha);
-        console.log(CONFIG.MENSAGENS.FISCAL_GERADA(tipo, linha));
+      const historico = `${docNum} ${credor}`;
+      contabeis.push(gerarLinhaContabil('SAL', dataPagto, '126', codigoBanco, valorPago, historico, '882'));
+    } else if (documento.includes('PLB.PLB')) {
+      const historico = `${documentoRaw} ${credor}`;
+      contabeis.push(gerarLinhaContabil('PLB', dataPagto, '127', codigoBanco, valorPago, historico, '882'));
+    } else if (documento.startsWith('AV.')) {
+      contabeis.push(gerarLinhaContabil('TARIFA', dataPagto, '253', codigoBanco, valorPago, '', '445'));
+    } else if (documento.startsWith('TRCT.RESCISAO')) {
+      const historico = String(row['Coluna A'] || credor).trim();
+      contabeis.push(gerarLinhaContabil('TRCT', dataPagto, '8224', codigoBanco, valorPago, historico, '401'));
+    } else if (documento.startsWith('ADT.')) {
+      const historico = `${docNum} ${credor}`;
+      contabeis.push(gerarLinhaContabil('ADT', dataPagto, '30', codigoBanco, valorPago, historico, '820'));
+    } else if (documento.startsWith('GRRF.FGTS')) {
+      const historico = credor;
+      contabeis.push(gerarLinhaContabil('FGTS', dataPagto, '8112', codigoBanco, valorPago, historico, '383'));
+    }
+
+    // ========== FISCAIS ==========
+    const partes = documentoRaw.split('.');
+    const tipoFiscal = partes[0];
+    const numeroFiscal = partes[1]?.trim() ?? '';
+    const infoFiscal = mapaExportacao[numeroFiscal];
+
+    if (['NFE', 'NFSE', 'NFCA', 'NFCD'].includes(tipoFiscal) && numeroFiscal) {
+      if (infoFiscal) {
+        const linhaFiscal = gerarLinhaFiscal(tipoFiscal, numeroFiscal, dataPagto, valorPago, desconto, infoFiscal);
+        fiscais.push(linhaFiscal);
+        console.log(CONFIG.MENSAGENS.FISCAL_GERADA(tipoFiscal, linhaFiscal));
       } else {
-        console.warn(CONFIG.MENSAGENS.FISCAL_DESCARTADA(tipo, numero));
+        console.warn(CONFIG.MENSAGENS.FISCAL_DESCARTADA(tipoFiscal, numeroFiscal));
       }
     }
   }
 
+  console.log(`\n🔢 Totais → CONTÁBEIS: ${contabeis.length}, FISCAIS: ${fiscais.length}`);
+  console.log('📝 Última linha contábil:', contabeis[contabeis.length - 1] || 'nenhuma');
+  console.log('📝 Última linha fiscal:', fiscais[fiscais.length - 1] || 'nenhuma');
+
   return { contabeis, fiscais };
 }
-
 
 // ============================================================================
 // FUNÇÕES DE EXPORTAÇÃO
