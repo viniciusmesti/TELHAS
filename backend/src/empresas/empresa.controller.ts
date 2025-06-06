@@ -13,7 +13,6 @@ import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 
 @Controller('empresas')
 export class EmpresaController {
-  prisma: any;
   constructor(private readonly empresaService: EmpresaService) {}
 
   @Post()
@@ -45,9 +44,7 @@ export class EmpresaController {
 
   @Delete('codigo/:codigoSistema')
   async deleteByCodigo(@Param('codigoSistema') codigoSistema: string) {
-    return this.prisma.empresa.delete({
-      where: { codigoSistema },
-    });
+    return this.empresaService.deleteEmpresaByCodigo(codigoSistema);
   }
 
   @Post(':id/rules')
