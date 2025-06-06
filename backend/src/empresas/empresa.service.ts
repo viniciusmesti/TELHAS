@@ -42,6 +42,12 @@ export class EmpresaService {
     });
   }
 
+  async deleteEmpresaByCodigo(codigoSistema: string) {
+    return this.prisma.empresa.delete({
+      where: { codigoSistema },
+    });
+  }
+
   async updateEmpresaRules(id: string, regras: any) {
     return this.prisma.empresa.update({
       where: { id },
