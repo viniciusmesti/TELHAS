@@ -22,38 +22,12 @@ import { processarArquivo350 as processarArquivo350Np } from 'src/Regras/NP/350/
 import { processarArquivo289NP } from 'src/Regras/NP/289/ProcessarArquivo289';
 import { Processador326 } from 'src/Regras/NP/326/ProcessarArquivo326';
 import { exportToTxt289 } from 'src/Regras/NP/289/ProcessarArquivo289';
-
-interface ProcessedInfo {
-  path: string;
-  size: number;
-}
+import { ProcessedInfo, uploadIfNotEmpty } from '../utils/upload';
 
 @Injectable()
 export class NpProcessor implements IEmpresaProcessor {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  private async uploadIfNotEmpty(
-    key: string,
-    filePath: string,
-    codigoSistema: string,
-    result: Record<string, ProcessedInfo>,
-  ) {
-    const stats = fs.statSync(filePath);
-    if (stats.size > 0) {
-      const fileBuffer = fs.readFileSync(filePath);
-      const { supabasePath } = await this.supabaseService.uploadProcessedFile(
-        filePath,
-        fileBuffer,
-        codigoSistema,
-      );
-      result[key] = {
-        path: supabasePath,
-        size: stats.size,
-      };
-    } else {
-      fs.unlinkSync(filePath);
-    }
-  }
 
   async processUnificado(
     inputExcelPath: string,
@@ -66,85 +40,85 @@ export class NpProcessor implements IEmpresaProcessor {
     try {
       const out255 = path.join(outputDir, 'saida255.txt');
       await processarArquivo255Np(inputExcelPath, out255);
-      await this.uploadIfNotEmpty('regra255', out255, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra255', out255, codigoSistema, result);
     } catch {}
 
     try {
       const out2571 = path.join(outputDir, 'saida257-1.txt');
       await processarArquivo257_1Np(inputExcelPath, out2571);
-      await this.uploadIfNotEmpty('regra257_1', out2571, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra257_1', out2571, codigoSistema, result);
     } catch {}
 
     try {
       const out2572 = path.join(outputDir, 'saida257-2.txt');
       await processarArquivo257_2Np(inputExcelPath, out2572);
-      await this.uploadIfNotEmpty('regra257_2', out2572, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra257_2', out2572, codigoSistema, result);
     } catch {}
 
     try {
       const out282 = path.join(outputDir, 'saida282.txt');
       await processarArquivo282Np(inputExcelPath, out282);
-      await this.uploadIfNotEmpty('regra282', out282, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra282', out282, codigoSistema, result);
     } catch {}
 
     try {
       const out283 = path.join(outputDir, 'saida283.txt');
       await processarArquivo283Np(inputExcelPath, out283);
-      await this.uploadIfNotEmpty('regra283', out283, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra283', out283, codigoSistema, result);
     } catch {}
 
     try {
       const out284 = path.join(outputDir, 'saida284.txt');
       await processarArquivo284Np(inputExcelPath, out284);
-      await this.uploadIfNotEmpty('regra284', out284, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra284', out284, codigoSistema, result);
     } catch {}
 
     try {
       const out328 = path.join(outputDir, 'saida328.txt');
       await processarArquivo328Np(inputExcelPath, out328);
-      await this.uploadIfNotEmpty('regra328', out328, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra328', out328, codigoSistema, result);
     } catch {}
 
     try {
       const out329 = path.join(outputDir, 'saida329.txt');
       await processarArquivo329Np(inputExcelPath, out329);
-      await this.uploadIfNotEmpty('regra329', out329, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra329', out329, codigoSistema, result);
     } catch {}
 
     try {
       const out335 = path.join(outputDir, 'saida335.txt');
       await processarArquivo335Np(inputExcelPath, out335);
-      await this.uploadIfNotEmpty('regra335', out335, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra335', out335, codigoSistema, result);
     } catch {}
 
     try {
       const out336 = path.join(outputDir, 'saida336.txt');
       await processarArquivo336Np(inputExcelPath, out336);
-      await this.uploadIfNotEmpty('regra336', out336, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra336', out336, codigoSistema, result);
     } catch {}
 
     try {
       const out337 = path.join(outputDir, 'saida337.txt');
       await processarArquivo337Np(inputExcelPath, out337);
-      await this.uploadIfNotEmpty('regra337', out337, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra337', out337, codigoSistema, result);
     } catch {}
 
     try {
       const out347 = path.join(outputDir, 'saida347.txt');
       await processarArquivo347Np(inputExcelPath, out347);
-      await this.uploadIfNotEmpty('regra347', out347, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra347', out347, codigoSistema, result);
     } catch {}
 
     try {
       const out349 = path.join(outputDir, 'saida349.txt');
       await processarArquivo349Np(inputExcelPath, out349);
-      await this.uploadIfNotEmpty('regra349', out349, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra349', out349, codigoSistema, result);
     } catch {}
 
     try {
       const out350 = path.join(outputDir, 'saida350.txt');
       await processarArquivo350Np(inputExcelPath, out350);
-      await this.uploadIfNotEmpty('regra350', out350, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra350', out350, codigoSistema, result);
     } catch {}
 
     return result;

@@ -5,38 +5,12 @@ import { Injectable } from "@nestjs/common";
 import { IEmpresaProcessor } from "./IEmpresaProcessor";
 import { SupabaseService } from "src/supabase/supabase.service";
 import { processarSalarioExcel, exportTxtGenerico } from "src/Regras/METRO/processarArquivo";
-
-interface ProcessedInfo {
-  path: string;
-  size: number;
-}
+import { ProcessedInfo, uploadIfNotEmpty } from '../utils/upload';
 
 @Injectable()
 export class MetroProcessor implements IEmpresaProcessor {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  private async uploadIfNotEmpty(
-    key: string,
-    filePath: string,
-    codigoSistema: string,
-    result: Record<string, ProcessedInfo>,
-  ) {
-    const stats = fs.statSync(filePath);
-    if (stats.size > 0) {
-      const fileBuffer = fs.readFileSync(filePath);
-      const { supabasePath, error } = await this.supabaseService.uploadProcessedFile(
-        filePath,
-        fileBuffer,
-        codigoSistema,
-      );
-      result[key] = {
-        path: supabasePath,
-        size: stats.size,
-      };
-    } else {
-      fs.unlinkSync(filePath); // remove arquivo vazio
-    }
-  }
 
   // Method for processing METRO with two files (called from uploadMetro)
   async processUnificadoMetro(
@@ -55,8 +29,8 @@ export class MetroProcessor implements IEmpresaProcessor {
       exportTxtGenerico(contabeis, outputContabil, 'metro_contabil');
       exportTxtGenerico(fiscais, outputFiscal, 'metro_fiscal');
   
-      await this.uploadIfNotEmpty('regra_metro_contabil', outputContabil, codigoSistema, result);
-      await this.uploadIfNotEmpty('regra_metro_fiscal', outputFiscal, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra_metro_contabil', outputContabil, codigoSistema, result);
+      await uploadIfNotEmpty(this.supabaseService, 'regra_metro_fiscal', outputFiscal, codigoSistema, result);
     } catch (error) {
       console.error('❌ Erro no processamento da regra METRO:', error);
       throw error;
